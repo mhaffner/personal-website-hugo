@@ -12,8 +12,9 @@ math = false
 Here are a few tips for migrating an existing website from Jekyll to Hugo. These tips can be applied in conjunction with following Hugo Academic's [getting started guide]({{< ref "post/getting-started.md" >}}).
 
 ## Move static content to `static`
-Jekyll has a rule that any directory not starting with `_` will be copied as-is to the `_site` output. Hugo keeps all static content under `static`. You should therefore move it all there.
-With Jekyll, something that looked like
+Jekyll has a rule that any directory not starting with `_` will be copied as-is
+to the `_site` output. Hugo keeps all static content under `static`. You should
+therefore move it all there. With Jekyll, something that looked like
 
     ▾ <root>/
         ▾ images/
