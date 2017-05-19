@@ -12,31 +12,34 @@ weight = 1
 # List your academic interests.
 [interests]
   interests = [
-    "Artificial Intelligence",
-    "Computational Linguistics",
-    "Information Retrieval"
+    "GIScience",
+    "Urban Geography",
+    "GeoWeb"
   ]
 
 # List your qualifications (such as academic degrees).
 [[education.courses]]
-  course = "PhD in Artificial Intelligence"
-  institution = "Stanford University"
+  course = "PhD in Geography"
+  institution = "Oklahoma State University"
+  year = "2018 (expected)"
+
+[[education.courses]]
+  course = "M.S. in Geography"
+  institution = "Oklahoma State University"
+  year = 2014 
+
+[[education.courses]]
+  course = "B.S.Ed., Geography & Mathematics"
+  institution = "Pittsburg State University"
   year = 2012
-
-[[education.courses]]
-  course = "MEng in Artificial Intelligence"
-  institution = "Massachusetts Institute of Technology"
-  year = 2009
-
-[[education.courses]]
-  course = "BSc in Artificial Intelligence"
-  institution = "Massachusetts Institute of Technology"
-  year = 2008
  
 +++
 
 # Biography
 
-Lena Smith is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate. 
+I'm currently a PhD Candidate in the Department of Geography at Oklahoma State
+University. I'm also a Graduate Research Assistant, working with the Oklahoma
+Historical Society. Outside of my research interests, I have a passion for
+Emacs/Spacemacs, GNU/Linux, Free Software, music, Oklahoma State sports, and
+commuter cycling. These do inevitably spill into research in various ways, of
+course!
