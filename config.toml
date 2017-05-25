@@ -1,7 +1,7 @@
 baseurl = "https://mhaffner.github.io"
 title = "Matthew Haffner"
 copyright = "&copy; 2016 Matthew Haffner"
-theme = "academic"
+theme = "academic-dark"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
 
@@ -150,7 +150,7 @@ defaultContentLanguageInSubdir = false
 [[menu.main]]
   name = "Home"
   url = "#about"
-  weight = 1
+  Weight = 1
 
 [[menu.main]]
   name = "Publications"

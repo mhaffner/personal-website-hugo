@@ -23,7 +23,7 @@ url = "http://onlinelibrary.wiley.com/doi/10.1111/gere.12250/full"
 
 # Optional featured image (relative to `static/img/` folder).
 # [header]
-# image = "headers/bubbles-wide.jpg"
-# caption = "My caption :smile:"
+# image = "why-geo.eps"
+# caption = ""
 
 +++
