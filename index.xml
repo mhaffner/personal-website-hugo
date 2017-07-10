@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Matthew Haffner on Matthew Haffner</title>
+    <link>https://mhaffner.github.io/</link>
+    <description>Recent content in Matthew Haffner on Matthew Haffner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Matthew Haffner</copyright>
+    <lastBuildDate>Wed, 20 Apr 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Location based social media behavior and perception: Views of university students</title>
+      <link>https://mhaffner.github.io/publication/lbsm-survey/</link>
+      <pubDate>Thu, 18 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/publication/lbsm-survey/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>GIS-based modeling of tornado siren sound propagation: Refining spatial extent and coverage estimations</title>
+      <link>https://mhaffner.github.io/publication/tornado-sirens/</link>
+      <pubDate>Wed, 17 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/publication/tornado-sirens/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The development of shp2nosql</title>
+      <link>https://mhaffner.github.io/post/shp2nosql/</link>
+      <pubDate>Wed, 12 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/post/shp2nosql/</guid>
+      <description>&lt;p&gt;In the early days of my dissertation, I was collecting Twitter data but had no
+idea how to store, manage, or query these data. First, I tried PostgreSQL with
+PostGIS. I had been wanting to learn PostGIS anyway, not to mention a suitable
+alternative to MS SQL Server. After learning PostGIS&amp;rsquo;s intricacies, I soon found
+it was unsuitable for my needs. After some searching, I stumbled upon MongoDB.&lt;/p&gt;
+
+&lt;p&gt;Subsequently, I started using MongoDB to handle my data. Working with MongoDB
+requires at least &lt;em&gt;some&lt;/em&gt; knowledge of JavaScript, which I was wanting to learn
+anyway, so I didn&amp;rsquo;t mind this switch. This worked somewhat better than
+PostgreSQL since MongoDB is good at handling semi-structured data (like those
+from Twitter), but sharding was not intuitive, inserting spatial data was
+difficult, and queries were still slow. At the &lt;em&gt;CyberGIS and GeoSpatial Data
+Science&lt;/em&gt; conference/workshop at the University of Illinois in the summer of
+2016, I was introduced to Elasticsearch.&lt;/p&gt;
+
+&lt;p&gt;So I started using Elasticsearch to handle my data. After many painstaking
+attempts to index geographic data in Elasticsearch, I was becoming concerned
+that I&amp;rsquo;d spend the next several years trying a never-ending list of databases,
+learning new skills, drowning in the digital sea&amp;hellip;.. and never complete my
+dissertation. Thankfully, with the help
+of
+&lt;a href=&#34;https://www.gitbook.com/book/mapbutcher/using-spatial-data-in-elasticsearch/details&#34; target=&#34;_blank&#34;&gt;MapButcher&amp;rsquo;s tutorial&lt;/a&gt;,
+I was finally able to index my data and perform spatial queries in a reasonable
+amount of time.&lt;/p&gt;
+
+&lt;p&gt;My search for a suitable database stopped after three. This process was
+incredibly valuable in that I learned many new skills and created some useful
+tools for myself, but ten months had elapsed before I found a suitable workflow.
+I thought, &lt;em&gt;What about researchers who don&amp;rsquo;t have ten months to spare learning
+the intricacies of multiple databases&lt;/em&gt;? I now had three different workflows for
+working with spatially enabled databases, but each was somewhat clunky. Since I
+knew I&amp;rsquo;d be working with Elasticsearch for quite some time, it was in my best
+interest to create something more efficient. If I could make a generalizable
+tool, others could benefit from it and avoid some of the mishaps I encountered
+along the way. Combine these elements with my need to present something at the
+&lt;em&gt;AAG Annual Meeting&lt;/em&gt; (and save dissertation article presentations for later),
+and the stars had wonderfully aligned. I decided to create a software tool to
+aid geographers in inserting/indexing spatial data.&lt;/p&gt;
+
+&lt;p&gt;There really was no need to create a &lt;em&gt;shapefile to PostGIS&lt;/em&gt; tool, since it
+already exists: &lt;code&gt;shp2pgsql&lt;/code&gt;. What I needed (and sought to create) was the NoSQL
+equivalent, which I call &lt;code&gt;shp2nosql&lt;/code&gt;. Currently it works with Elaticsearch and
+MongoDB, but I&amp;rsquo;d love others to contribute and make the tool more robust,
+suggest new features, and possibly support more databases. Technical details can
+be found on my GitHub page &lt;a href=&#34;https://github.com/mhaffner/shp2nosql&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;, and
+the presentation I delivered at the AAG Annual Meeting can be
+found &lt;a href=&#34;https://mhaffner.github.io/presentations/shp2nosql.html&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The development of shp2nosql: Command line tools for spatial data and NoSQL databases</title>
+      <link>https://mhaffner.github.io/talk/shp2nosql/</link>
+      <pubDate>Wed, 05 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/talk/shp2nosql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Burnination of the Wordpress</title>
+      <link>https://mhaffner.github.io/post/first-post/</link>
+      <pubDate>Thu, 30 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/post/first-post/</guid>
+      <description>
+
+&lt;p&gt;I&amp;rsquo;m currently in the process of moving my blog to GitHub pages. I&amp;rsquo;m
+doing this for several reasons:&lt;/p&gt;
+
+&lt;h1 id=&#34;1-ease-of-creating-publishing-posts&#34;&gt;(1) Ease of creating/publishing posts&lt;/h1&gt;
+
+&lt;p&gt;On my first few Wordpress posts I typed content directly in Wordpress.
+I didn&amp;rsquo;t mind this at the time, but eventually I started using Emacs
+&lt;code&gt;org-mode&lt;/code&gt; for all writing, including research papers, blog posts,
+etc. After a semi-debacle of copying an html-exported &lt;code&gt;org&lt;/code&gt; file into
+Wordpress, I never posted again. This manual labor approach did not
+appeal to me. I discovered that I could host a blog through GitHub
+pages and simply push a &lt;code&gt;.md&lt;/code&gt; file to a repository (much like I was
+already doing with code repositories) to create a post. This is much,
+much easier than what I was doing with Wordpress before. I&amp;rsquo;m still in
+the process of figuring out how to use &lt;code&gt;org-mode&lt;/code&gt; on here, but I&amp;rsquo;ll be
+there soon :)&lt;/p&gt;
+
+&lt;h1 id=&#34;2-version-control&#34;&gt;(2) Version control&lt;/h1&gt;
+
+&lt;p&gt;I have the unfortunate habit of nuking everying I do pretty regularly,
+and git makes me forgive myself exceedingly quicker than before.&lt;/p&gt;
+
+&lt;h1 id=&#34;3-less-corporate-control-profit-whatever&#34;&gt;(3) Less corporate control/profit/whatever&lt;/h1&gt;
+
+&lt;p&gt;No more ads. More control for me. No longer do I get sick when I inadvertently
+see options to &lt;em&gt;pay&lt;/em&gt; for Wordpress themes thinking about all the innocent people
+who have willingly done this (now that I know about Jekyll). &lt;strong&gt;EDIT&lt;/strong&gt;: So I
+found out that there are plenty of Jekyll themes you can pay for too. But I can
+still avoid seeing this easier on GitHub pages. And I have more control this way.&lt;/p&gt;
+
+&lt;h1 id=&#34;4-easier-to-reflect-changes-to-my-cv&#34;&gt;(4) Easier to reflect changes to my CV&lt;/h1&gt;
+
+&lt;p&gt;Nothing wrong with a little self-promotion on a personal blog, right? With
+Wordpress I had to upload my new CV through the web interface &lt;em&gt;every time&lt;/em&gt; I
+made a change (which is quite often). I&amp;rsquo;m still working on this, but I plan on
+creating a symbolic link from my CV repository here, so all I&amp;rsquo;ll have to do is
+push the changes to this repository when I update my CV.
+&lt;strong&gt;EDIT&lt;/strong&gt;: I&amp;rsquo;m now doing this with hard links. Setting it up was pretty easy.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

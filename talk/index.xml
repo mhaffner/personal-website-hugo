@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Recent &amp; Upcoming Talks on Matthew Haffner</title>
+    <link>https://mhaffner.github.io/talk/</link>
+    <description>Recent content in Recent &amp; Upcoming Talks on Matthew Haffner</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 Matthew Haffner</copyright>
+    <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/talk/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>The development of shp2nosql: Command line tools for spatial data and NoSQL databases</title>
+      <link>https://mhaffner.github.io/talk/shp2nosql/</link>
+      <pubDate>Wed, 05 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://mhaffner.github.io/talk/shp2nosql/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
