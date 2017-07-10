@@ -1,4 +1,4 @@
-baseurl = "https://mhaffner.github.io"
+baseurl = "https://mhaffner.github.io/"
 title = "Matthew Haffner"
 copyright = "&copy; 2017 Matthew Haffner"
 theme = "academic"
