@@ -4,3 +4,7 @@
 [submodule "themes/academic-dark"]
 	path = themes/academic-dark
 	url = https://github.com/mhaffner/hugo-academic-dark
+[submodule "public"]
+	path = public
+	url = git@github.com:mhaffner/mhaffner.github.io.git
+	branch = master
