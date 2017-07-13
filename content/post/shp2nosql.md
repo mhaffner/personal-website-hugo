@@ -3,9 +3,7 @@ date = "2017-04-12T00:00:00"
 draft = false
 tags = ["Bash", "NoSQL", "GeoJSON", "Shapefile"]
 title = "The development of shp2nosql"
-summary = """
-A short summary of why I decided to develop `shp2nosql`
-"""
+summary = "A short summary of my motivation for developing `shp2nosql`"
 math = false
 +++
 
