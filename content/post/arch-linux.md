@@ -1,10 +1,11 @@
 +++
 date = "2017-07-10T00:00:00"
-draft = true
+draft = false
 tags = ["Arch Linux", "GNU/Linux"]
 title = "Why I switched from Ubuntu to Manjaro (Arch Linux)"
 summary = "Your life could be easier. Much easier."
 math = false
+comments = true
 +++
 
 Like everyone else, when I first started using GNU/Linux I gravitated toward
