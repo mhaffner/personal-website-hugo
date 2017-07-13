@@ -5,6 +5,7 @@ tags = ["Bash", "NoSQL", "GeoJSON", "Shapefile"]
 title = "The development of shp2nosql"
 summary = "A short summary of my motivation for developing `shp2nosql`"
 math = false
+comments = true
 +++
 
 In the early days of my dissertation, I was collecting Twitter data but had no
