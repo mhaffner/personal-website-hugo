@@ -8,5 +8,4 @@ highlight = false
 [header]
 image = ""
 caption = ""
-
 +++
