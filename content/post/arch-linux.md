@@ -1,12 +1,21 @@
 +++
 date = "2017-07-13T00:00:00"
 draft = false
-tags = ["Arch Linux", "GNU/Linux", "shp2snoql"]
-title = "Why I switched from Ubuntu to Manjaro (Arch Linux)"
+tags = ["Manjaro", "Arch Linux", "GNU/Linux", "shp2snoql"]
+title = "Why I switched from Ubuntu to Manjaro (Arch Linux derivative)"
 summary = "Your life could be easier. Much easier."
 math = false
 comments = true
 +++
+
+**EDIT: I've made several modifications to the original piece based on helpful
+comments from reddit users _newworkaccount_, _iKnitYogurt_, _jprada_, and
+_ThisTimeIllSucceed_ on the
+thread
+[here](https://www.reddit.com/r/ManjaroLinux/comments/6n6mao/why_i_switched_from_ubuntu_to_manjaro/).
+View the original post in its full glory/shame
+on
+[Github](https://github.com/mhaffner/personal-website-hugo/blob/master/content/post/arch-linux.md).**
 
 Like everyone else, when I first started using GNU/Linux I gravitated toward
 Ubuntu.  While using Ubuntu, I sought to try other distributions and briefly
@@ -19,26 +28,31 @@ packages from source is not the end of the world, but if there was a
 distribution/package manager that had a workable version (for my purposes) of
 all the packages I needed, wouldn't that be worth pursuing?
 
-Enter Arch Linux. Since using Arch, I'm not sure I've had to build anything from
-source; I've installed everything with a simple one-liner with `pacman` or
-`yaourt`. For testing purposes (and for the sake of (re)installing systems
-often) it's nice to have reproducible methods of software installation. Aside
-from this, my chosen distribution of Arch Linux, Manjaro, has other really nice
-features rendering it indispensable. Ubuntu has some good things going for it,
-and for it I do still hold some reverence as my first true GNU/Linux experience.
-The purple terminal sparks an incredible amount of nostalgia every time I see it
-on someone else's system.
+Enter the Arch Linux family. Since using Manjaro (technically an Arch Linux
+derivative, not Arch Linux itself nor an Arch distribution; thanks to reddit
+users _newworkaccount_ and _iKnitYogurt_ for clarifying this), I'm not sure I've
+had to build anything from source manually; I've installed everything with a
+simple one-liner with `pacman` or `yaourt`. For testing purposes (and for the
+sake of (re)installing systems often) it's nice to have reproducible methods of
+software installation. Aside from this, Manjaro has other really nice features
+rendering it indispensable. Ubuntu has some good things going for it, and for it
+I do still hold some reverence as my first true GNU/Linux experience. The purple
+terminal sparks an incredible amount of nostalgia every time I see it on someone
+else's system.
 
 But I can't go back.
 
 **Warning:** _This is an opinionated piece, and there are likely some solutions
-to the problems I perceive with Ubuntu. Nevertheless, Arch Linux has seemed much
+to the problems I perceive with Ubuntu. Nevertheless, Manjaro has seemed much
 more straightforward to me, and at its core, I believe it's more user-friendly.
-If I'm being unfair to Ubuntu and/or you know of solutions to my problems, I'd
-love to hear about it! Drop me a comment<sup>1</sup>._
+I do not intend this piece to be authoritative; rather, it is a description of
+my journey into the Arch-related world from Ubuntu (thanks to reddit user jprada
+for pointing out how this could be clarified). If I'm being unfair to Ubuntu
+and/or you know of solutions to my problems, I'd love to hear about it! Drop me
+a comment<sup>1</sup>._
 
-The package manager for Arch Linux is called `pacman`, and installing multiple
-packages can be accomplished with
+The package manager for Manjaro (and Arch Linux) is called `pacman`. Installing
+multiple packages can be accomplished with
 
     pacman -S package1 package2 package3
     
@@ -50,44 +64,48 @@ but if you have to manually add a PPA, a key, etc., this process becomes several
 lines long for each package. Multi-line solutions were common for me as I often
 need bleeding edge packages, and most default package versions were not up to
 date enough. This process could be automated in a script, but the keys and
-repositories can change. I've never had to add a repository manually with Arch
-since software in the community repositories (installed with `yaourt`) have
-everything I need that the official repositories lack. Beyond this, removing
-packages seems to be much easier with `pacman` through
+repositories can change. I've never had to add a repository manually with
+Manjaro since software in the community repositories (installed with `yaourt`)
+have everything I need that the official repositories lack. Beyond this,
+removing packages seems to be much easier with `pacman` through
     
     pacman -R package
+
+Reddit user _ThisTimeIllSucceed_ actually suggests using 
+
+    pacman -Rns package
     
-On the other hand, `apt` uses a combination of `purge` and `remove`. I'm not
-really sure which comes first or why, and I'm not really sure what these
-commands fundamentally do. I've so often received errors with `apt-get update`
-after removing packages that I'm left wondering if I've ever used these commands
-correctly.
+which removes any dependencies not used by another package and any config files
+for the package. On the other hand, `apt` uses a combination of `purge` and
+`remove`. I'm not really sure which comes first or why, and I'm not really sure
+what these commands fundamentally do. I've so often received errors with
+`apt-get update` after removing packages that I'm left wondering if I've ever
+used these commands correctly.
 
-Certainly the argument in favor of Ubuntu (and against Arch Linux) is that
-packages are more stable. This is probably true on a package-to-package basis,
-but I've had much more difficulty keeping the OS stable _as a whole_ with Ubuntu
-than with Arch Linux. A large part of this has to do with distribution upgrades,
-which have been a pain for me on Ubuntu but **don't exist** in Arch Linux, which
-operates on a rolling release. Using the command `pacman -Syu` upgrades all on
-packages on the system, meaning that you have the most up-to-date version of the
-OS once you upgrade packages. 
+Certainly the argument in favor of Ubuntu (and against Arch Linux-like
+derivatives) is that packages are more stable. This is probably true on a
+package-to-package basis, but I've had much more difficulty keeping the OS
+stable _as a whole_ with Ubuntu than with Manjaro. A large part of this has to
+do with distribution upgrades, which have been a pain for me on Ubuntu but
+**don't exist** in Manjaro, which operates on a rolling release. Using the
+command `pacman -Syu` upgrades all on packages on the system, meaning that you
+have the most up-to-date version of the OS once you upgrade packages.
 
-This feature in Arch Linux (or the lack thereof in Ubuntu) was the ultimate
-tipping point for me. A few months ago my graphics card died, so I bought a new
-one, an AMD RX 470. I could not _for the life of me_ get it working in
-Ubuntu 14. After doing some research (after I bought the card, of course), I
-discovered that AMD cards don't always work well with GNU/Linux. After trying a
-plethora of options, I decided that upgrading from 14 to 16 might be my best
-shot. Aside from not solving my graphics card issue, this upgrade resulted in a
-whole host of packages not working correctly<sup>2</sup>. At this point I
-decided to try Arch Linux, which has a reputation of working with a wide range
-of (and often newest) hardware.
+This feature in Manjaro (or the lack thereof in Ubuntu) was the ultimate tipping
+point for me. A few months ago my graphics card died, so I bought a new one, an
+AMD RX 470. I could not _for the life of me_ get it working in Ubuntu 14. After
+doing some research (after I bought the card, of course), I discovered that AMD
+cards don't always work well with GNU/Linux. After trying a plethora of options,
+I decided that upgrading from 14 to 16 might be my best shot. Aside from not
+solving my graphics card issue, this upgrade resulted in a whole host of
+packages not working correctly<sup>2</sup>. At this point I decided to try
+various Arch Linux derivatives, which have a reputation of working with a wide
+range of (and often newest) hardware.
 
-To be precise, I'm using Manjaro, which is an Arch Linux derivative. There are
-plenty of other Arch Linux spin-offs including Antergos, Apricity, and ArchBang.
-Pure Arch Linux is a bit too stripped down for my liking; Manjaro seems like a
-good balance between a simple, highly configurable system and one that allows
-you to hit the ground running. 
+There are plenty of other Arch Linux derivatives including Antergos, Apricity,
+and ArchBang. Pure Arch Linux is a bit too stripped down for my liking; Manjaro
+seems like a good balance between a simple, highly configurable system and one
+that allows you to hit the ground running.
 
 Over time, I've come to the conclusion that no GNU/Linux distribution is
 perfect. I still have issues with Manjaro from time to time (explained at the
@@ -149,16 +167,17 @@ Way easier. And I did not have to manually alter config files.
 
 **Random rambling**: _Some of difference in installation of dependencies is due
 to the suite of pre-packaged software that comes with Manjaro; it comes with
-`curl` and `java` whereas Ubuntu does not. This is somewhat counter-intuitive
-because Arch Linux generally takes a DIY approach - The developers seek to
-create an non-bloated experience, avoiding design decisions that force users
-down a specific path. In fact, it seems as though the mere concept of an
-Arch-based "distribution" deviates from this philosophy, but if developers make
-(a) mostly good design decisions, (b) that I can change if I want, (c) that help
-me get a system up and running much faster than I could with a bare bones
-installation... then I'm okay with this_.
+`curl` and `java` whereas Ubuntu does not. The inclusion of these extra packages
+is an example of how Manjaro deviates from the pure Arch Linux philosophy, which
+generally takes a DIY approach - The developers seek to create an non-bloated
+experience, avoiding design decisions that force users down a specific path.
+(This is not to suggest that Ubuntu would be expected to contain everything that
+Arch Linux contains, of course). However, if Manjaro developers make (a) mostly
+good design decisions, (b) that I can change if I want, (c) that help me get a
+system up and running much faster than I could with a bare bones installation...
+then I'm okay with this_.
 
-It's possible that users of other Arch Linux distributions would need something
+It's possible that users of other Arch Linux derivatives would need something
 slightly different to install dependencies for `shp2nosql`, but the general
 point still stands: many one liners with `pacman` are analogous to multi-step
 processes with `apt`. This includes the installation of `QGIS`, `R`, and
@@ -169,12 +188,13 @@ anymore, especially to new users. In this piece I focused mostly on package
 installation, but there are other notable features of Manjaro (and other
 Arch-based distributions) that are worth mentioning here:
 
-- **Documentation**: the Arch Wiki is incredible, and 95%+ of my questions are
-  answered here. I definitely cannot say the same for Ubuntu.
+- **Documentation**: the Arch Wiki is incredible, much of it applies to Manjaro,
+  and 95%+ of my questions are answered here. I definitely cannot say the same
+  for Ubuntu.
 
-- **Kernel installation**: Installing and removing kernels is trivial through the System
-  Settings Module (this ended up being part of the solution to using my new
-  GPU).
+- **Kernel installation**: Installing and removing kernels is trivial through
+  the System Settings Module (this ended up being part of the solution to using
+  my new GPU).
   
 - **Greater privacy/freedom**: Many Ubuntu users may not even realize that their OS
   contains
@@ -182,8 +202,9 @@ Arch-based distributions) that are worth mentioning here:
   Searches in dashboard are transmitted to Canonical, and the company profits
   when a user buys a product from Amazon using the Amazon App.<sup>3,4,5</sup>
   
-- **Less bloated-ness**: Manjaro just feels less bloated. It has no Software Center,
-  for instance, and feels snappier. Knowing that Canonical transmits search data
+- **Less bloated-ness**: Manjaro (which is certainly more bloated than pure
+  Arch) feels much less bloated than Ubuntu. It has no Software Center, for
+  instance, and feels snappier. Knowing that Canonical transmits search data
   might explain some of this new found snappiness...
   
 - **Other various things _just work_**: For a while, my test of a well-working
