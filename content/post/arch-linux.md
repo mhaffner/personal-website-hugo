@@ -1,7 +1,7 @@
 +++
-date = "2017-07-10T00:00:00"
+date = "2017-07-13T00:00:00"
 draft = false
-tags = ["Arch Linux", "GNU/Linux"]
+tags = ["Arch Linux", "GNU/Linux", "shp2snoql"]
 title = "Why I switched from Ubuntu to Manjaro (Arch Linux)"
 summary = "Your life could be easier. Much easier."
 math = false
