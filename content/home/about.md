@@ -42,4 +42,4 @@ University. I'm also a Graduate Research Assistant, working with the Oklahoma
 Historical Society. Outside of my research interests, I have a passion for
 Emacs/Spacemacs, GNU/Linux, Free Software, music, Oklahoma State sports, and
 commuter cycling. These do inevitably spill into research in various ways, of
-course!
+course! Check out my CV [here](https://mhaffner.github.io/cv/cv.pdf).
