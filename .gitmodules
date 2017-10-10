@@ -8,3 +8,6 @@
 	path = public
 	url = git@github.com:mhaffner/mhaffner.github.io.git
 	branch = master
+[submodule "content/slides"]
+	path = content/slides
+	url = git@github.com:mhaffner/presentations
