@@ -1,7 +1,16 @@
-+++
-date = "2017-10-25T00:00:00"
-title = "Location based social media behaviors and perception: Views of university students"
-abstract = "NoSQL databases are becoming the standard for big data analysts because of their flexibility and horizontal scalability. Unfortunately for geographers and GIScientists, however, there is considerable difficulty in importing geographic features into these databases due to little standardization. In the early stages of a project's life cycle, a researcher may be forced to master the intricacies of inserting/indexing records into many different databases simply for the sake of assessing features and capabilities. This process can be time-consuming and frustrating, detracting from the goals of the project. In this talk, I detail the development of a set of command line tools called 'shp2nosql' (analogous to PostgreSQL's 'shp2pgsql' tool), used to import US census TIGER files into various NoSQL databases such as MongoDB and ElasticSearch. Developed in the Bourne again shell (Bash) and capable of running on GNU/Linux systems, this tool relies on a minimal number of arguments from the user, and its commands are relatively consistent across databases. While these tools are useful in the short term, they are not an end-all solution to the lack of interoperability between database systems and spatial data. Rather, tools such as these will hopefully encourage a network of collaboration, eventually leading to the development of standards across databases. The software package will be hosted on GitHub, and collaboration from others is encouraged."
++++ date = "2017-10-25T00:00:00" 
+title = "Location based social media behaviors and perception: Views of university students" 
+abstract = "Location-based social media (LBSM), a specific type of volunteered geographic information (VGI), is increasingly being used as a spatial data source for researchers in geography and related disciplines. Many questions, though, have been raised about VGI data
+in terms of its quality and its contributors. While a number of studies have
+explored users' demographics and motivations for contribution to explicitly
+geographic forms of VGI, such as OpenStreetMap and Wikimapia, few have focused
+on these aspects with implicitly geographic forms of VGI, such as LBSM (for
+example, Twitter and Instagram). This study, through use of an online survey,
+specifically assesses the LBSM behavior and perceptions of 253 university
+students, noting differences found in gender, race, and academic standing. We
+find that the greatest differences are those between males and females, rather
+than through race or academic standing, and LBSM appears less biased than other
+forms of VGI."
 
 abstract_short = ""
 event = "SWAAG Annual Meeting"
