@@ -23,6 +23,7 @@ At Oklahoma State I've been the instructor of record in:
 I've also taught periodically in:
 
 - GEOG-2344: Digital Tools for Environmental Exploration
+- GEOG-5343: Advanced GIS: Resource Management Applications
 - GEOG-3123: Urban Geography
 
 I've been a guest speaker in:
