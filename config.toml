@@ -1,6 +1,6 @@
 baseurl = "https://mhaffner.github.io/"
 title = "Matthew Haffner"
-copyright = "&copy; 2017 Matthew Haffner"
+copyright = "2018 Matthew Haffner"
 theme = "academic"
 enableEmoji = true
 footnotereturnlinkcontents = "<sup>^</sup>"
