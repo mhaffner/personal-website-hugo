@@ -28,17 +28,17 @@ defaultContentLanguageInSubdir = false
     smartypants = true  # `false` disables all smart punctuation substitutions (e.g. smart quotes, dashes, fractions).
 
 [params]
-  color_theme = "dark-orange"
+  color_theme = "ocean"
   font = "classic"
   name = "Matthew Haffner"
-  role = "Phd Candidate"
+  role = "Assistant Professor"
   gravatar = false
-  organizations = [ { name = "Oklahoma State University", url = "" } ]
-  avatar = "13474922.jpg"
-  email = "haffner.matthew.m@gmail.com"
-  address = "337 Murray Hall, Department of Geography, Oklahoma State University, Stillwater, Oklahoma, 74074, USA"
+  organizations = [ { name = "University of Wisconsin - Eau Claire", url = "" } ]
+  avatar = "prof-pic-edit.png"
+  email = "haffnerm@uwec.edu"
+  address = "Phillips Science Hall 254, Department of Geography and Anthropology, University of Wisconsin - Eau Claire, Eau Claire, WI, 54701"
   office_hours = "By appointment"
-  phone = "405 744 6250"
+  phone = "715.836.2316"
   skype = ""
   telegram = ""
 
@@ -185,6 +185,11 @@ defaultContentLanguageInSubdir = false
     icon = "google-scholar"
     icon_pack = "ai"
     link = "https://scholar.google.co.uk/citations?hl=en&user=as6Av2sAAAAJ&view_op=list_works"
+
+  [[params.social]]
+    icon = "gitlab"
+    icon_pack = "fa"
+    link = "//gitlab.com/mhaffner"
 
   [[params.social]]
     icon = "github"
