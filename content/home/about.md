@@ -39,9 +39,9 @@ weight = 1
 
 # Biography
 
-I'm currently an Assitant Professor in the Department of Geography and
+I'm currently an Assistant Professor in the Department of Geography and
 Anthropology at the University of Wisconsin - Eau Claire where I started in
 June 2018. Most of my research revolves around geographic information science
-(GIScience), though I'm also interested in Emacs, GNU/Linux, Free/Libre
-Software, commuter cycling, and most recently, landscape photography. These do
-spill into research in various ways, of course!
+(GIScience), but I'm also interested in Emacs, GNU/Linux, Free/Libre Software,
+commuter cycling, and most recently, landscape photography. These do spill into
+research in various ways, of course!
