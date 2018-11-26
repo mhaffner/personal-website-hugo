@@ -45,7 +45,7 @@ the one above. This becomes tedious since most materials I create for courses
 files, and I have to open these all the time. I could open the _.html_ file in
 Emacs instead and then use
 
-`:! firefox %`
+    :! firefox %
 
 but the .html files created by `org-reveal` (a very nice package) are quite
 large and cause Emacs to hang. So, I sought to create something that would (a)
@@ -53,8 +53,7 @@ get the full file path to the current buffer and strip the extension, (b) slap
 ".html" to the end of this string, \(c) open the file in Firefox, and (d)
 assign this function to a keybinding. Here is what I came up with:
 
-```
-(defun open-html-firefox ()
+{{<highlight EmacsLisp>}}(defun open-html-firefox ()
 
   (interactive)
 
@@ -74,7 +73,7 @@ assign this function to a keybinding. Here is what I came up with:
   (add-hook 'org-mode-hook
             (lambda ()
               (local-set-key (kbd "C-c f") 'open-html-firefox)))
-```
+{{</highlight>}} 
 
 In my dotfile, the function has documentation, but I removed it for this post
 since I'm explaining everything in detail. The function itself is quite short
@@ -84,7 +83,8 @@ file) in Firefox with a command.
 
 Originally I was using 
 
-    (setq file-string (replace-regexp-in-string "\.Rmd" ".html" (buffer-file-name)))
+{{<highlight elisp>}} (setq file-string (replace-regexp-in-string "\.Rmd" ".html" (buffer-file-name)))
+{{</highlight>}}
     
 to create the string, but this obviously only works for .Rmd files. Also, I was
 not initially aware of the `file-name-sans-extension` function which turned out
@@ -121,19 +121,20 @@ For example, a block may contain something like
 Manually typing `#+BEGIN_SRC...`, etc. etc. is tedious, so I simply created a
 function and keybinding to automate this. Here it is:
 
-    (defun add-src-elements ()
-      "Make adding #+BEGIN/END _SRC elements easier"
-      (interactive)
-      (insert "#+BEGIN_SRC\n#+END_SRC")
-      (forward-line -1)
-      (evil-append-line 1)
-      (insert " "))
-      
-    ; set it to a keybinding
-    (with-eval-after-load 'org
-      (add-hook 'org-mode-hook
-                (lambda ()
-                  (local-set-key (kbd "C-c s") 'add-src-elements)))
+{{<highlight elisp>}}(defun add-src-elements ()
+    "Make adding #+BEGIN/END _SRC elements easier"
+    (interactive)
+    (insert "#+BEGIN_SRC\n#+END_SRC")
+    (forward-line -1)
+    (evil-append-line 1)
+    (insert " "))
+    
+  ; set it to a keybinding
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (local-set-key (kbd "C-c s") 'add-src-elements)))
+{{</highlight>}} 
                   
 My dotfile looks a little different since I have other `org-mode` hooks, but
 this is the gist of it. Again, the internet insists I use
