@@ -3,7 +3,7 @@ date = "2018-11-25T00:00:00"
 draft = false
 tags = ["Emacs", "Emacs Lisp"]
 title = "Doing useful things with Emacs Lisp"
-summary = "A beginner's (or lurker's) example to extending the ultimately extensible... operating system"
+summary = "A beginner's (or lurker's) guide to extending the ultimately extensible text editor"
 math = false
 comments = true
 +++
