@@ -17,6 +17,10 @@ title = "A spatial analysis of non-English Twitter activity in Houston, TX"
 # url_slides = "#"
 # url_video = "#"
 
+[[url_custom]]
+name = "Article"
+url = "https://onlinelibrary.wiley.com/doi/abs/10.1111/tgis.12335"
+
 # Optional featured image (relative to `static/img/` folder).
 # [header]
 # image = "why-geo.eps"

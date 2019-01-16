@@ -20,7 +20,7 @@ selected = false
 
 # Links (optional).
 url_pdf = ""
-url_slides = ""
+url_slides = "https://mhaffner.github.io/presentations/non-english-tweets.html"
 url_video = ""
 url_code = ""
 

@@ -12,16 +12,18 @@ weight = 1
 # List your academic interests.
 [interests]
   interests = [
-    "GIScience",
-    "Urban Geography",
-    "GeoWeb"
+    "GIScience and Systems",
+    "Digital Geographies",
+    "Quantitative Methods",
+    "Geographic Edcuation",
+    "Urban Geography"
   ]
 
 # List your qualifications (such as academic degrees).
 [[education.courses]]
   course = "PhD in Geography"
   institution = "Oklahoma State University"
-  year = "2018 (expected)"
+  year = "2018"
 
 [[education.courses]]
   course = "M.S. in Geography"
@@ -37,9 +39,9 @@ weight = 1
 
 # Biography
 
-I'm currently a PhD Candidate in the Department of Geography at Oklahoma State
-University. I'm also a Graduate Research Assistant, working with the Oklahoma
-Historical Society. Outside of my research interests, I have a passion for
-Emacs/Spacemacs, GNU/Linux, Free Software, music, Oklahoma State sports, and
-commuter cycling. These do inevitably spill into research in various ways, of
-course!
+I'm currently an Assistant Professor in the Department of Geography and
+Anthropology at the University of Wisconsin - Eau Claire where I started in
+June 2018. Most of my research revolves around geographic information science
+(GIScience), but I'm also interested in Emacs, GNU/Linux, Free/Libre Software,
+commuter cycling, and most recently, landscape photography. These do spill into
+research in various ways, of course!
