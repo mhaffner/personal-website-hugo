@@ -208,7 +208,7 @@ defaultContentLanguageInSubdir = false
 
 [[menu.main]]
   name = "CV"
-  url = "https://github.com/mhaffner/Awesome-CV/blob/master/cv.pdf"
+  url = "files/cv.pdf"
   weight = 7
 
 # Taxonomies.

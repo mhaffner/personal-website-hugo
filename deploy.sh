@@ -3,7 +3,7 @@
 echo -e "\033[0;32mDeploying updates to GitHub...\033[0m"
 
 # Copy CV from GitHub
-wget -O content/cv/cv.pdf 'https://github.com/mhaffner/Awesome-CV/raw/master/cv.pdf'
+wget -O static/files/cv.pdf 'https://github.com/mhaffner/Awesome-CV/raw/master/cv.pdf'
 
 # Build the project.
 R -e "setwd('/home/matt/git-repos/personal-website-hugo'); blogdown::build_site()"
