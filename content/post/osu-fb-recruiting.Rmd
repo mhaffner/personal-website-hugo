@@ -1,12 +1,12 @@
-+++
-date = "2019-01-25T00:00:00"
-draft = false
-tags = ["Spatial statistics", "geography", "college football", "recruiting"]
-title = "The Geography of Oklahoma State Football Recruiting Under Mike Gundy"
-summary = "A programmatic approach to the spatial dimensions of recruiting over time"
-math = false
-comments = true
-+++
+---
+date: "2019-01-25T13:09:13-06:00"
+draft : false
+tags : ["Spatial statistics", "geography", "college football", "recruiting"]
+title : "The Geography of Oklahoma State Football Recruiting"
+summary : "A programmatic approach to the spatial dimensions of recruiting over time"
+math : false
+comments : true
+---
 
 Anyone who reads PFB articles on recruiting or listens to Gundy's press
 conferences around signing day knows that Oklahoma State's recruiting practices
@@ -20,8 +20,6 @@ Rivals
 
 Yet, apart from these two, the mean and median centers have changed
 remarkably little over the past 14 years.
-
-
 
 I'm eager to investigate spatial changes in the recruiting patterns of Oklahoma
 State football over the last few years. Is the geographic scale more constricted
