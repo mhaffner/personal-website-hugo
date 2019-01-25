@@ -6,7 +6,7 @@ echo -e "\033[0;32mDeploying updates to GitHub...\033[0m"
 wget -O content/cv/cv.pdf 'https://github.com/mhaffner/Awesome-CV/raw/master/cv.pdf'
 
 # Build the project.
-hugo -t academic # if using a theme, replace by `hugo -t <yourtheme>`
+R -e "setwd('/home/matt/git-repos/personal-website-hugo'); blogdown::build_site()"
 
 # Go To Public folder
 cd public
