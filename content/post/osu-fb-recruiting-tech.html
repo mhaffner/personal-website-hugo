@@ -1,0 +1,497 @@
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/leaflet/leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet/leaflet.js"></script>
+<link href="/rmarkdown-libs/leafletfix/leafletfix.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4-compressed.js"></script>
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4leaflet.js"></script>
+<link href="/rmarkdown-libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
+<script src="/rmarkdown-libs/leaflet-providers/leaflet-providers.js"></script>
+<script src="/rmarkdown-libs/leaflet-providers-plugin/leaflet-providers-plugin.js"></script>
+
+
+<div id="the-geography-of-oklahoma-state-football-recruiting-over-time-web-scraping-text-processing-mapping-and-statistical-analysis" class="section level1">
+<h1>The geography of Oklahoma State Football recruiting over time: Web scraping, text processing, mapping, and statistical analysis</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In this piece I’m going to describe in detail the technical aspects behind a
+recent a recent project that I wrote about [here] on the geography of Oklahoma
+State football’s recruiting practices. This project involves extracting web
+content, processing text, geocoding, web mapping, and some basic exploratory
+spatial data analysis. I met a number of unexpected challenges along the way and
+I hope this will serve to help others facing similar issues.</p>
+</div>
+<div id="extracting-and-processing-text-from-the-web" class="section level2">
+<h2>Extracting and processing text from the web</h2>
+<p>Initially I was planning on just using the rosters provided on Oklahoma State’s
+website, but this proved to be problematic for several reasons: (1) each year’s
+roster lists every player on the team, not just recruits; (2) Oklahoma State’s
+online rosters are only available from 2015 - 2019; (3) and they use a weird
+state abbreviation system is used that don’t work well with geocoders. Kyle
+Porter from Pistol’s Firing Blog suggested I try Rivals or 247 Sports, and
+Rivals had exactly what I was looking for: a list of only recruits by year
+dating back to 2002.</p>
+<p>In the snippet below I load libraries, set my working directory and extract some
+raw data from my GitLab page. These are state (for the U.S.) and province (for
+Canada) abbreviations that are matched to abbreviations on Rivals and used to
+improve geocoding results.</p>
+<pre class="r"><code>  library(httr)
+  library(rjson)
+  library(magrittr)
+  library(ggmap)
+  library(purrr)
+
+  # set working directory
+  setwd(&quot;/home/matt/git-repos/okstate-fb-recruiting/data/&quot;)
+
+  # get state abbreviations from the web and convert to data frame
+  states.df &lt;- data.frame(read.csv(&quot;https://gitlab.com/mhaffner/useful-files/raw/master/state-abbreviations.csv&quot;,
+                                   strip.white = TRUE,
+                                   stringsAsFactors = FALSE))</code></pre>
+<p>Even though Rivals contains data on Oklahoma State’s rosters back to 2002, I
+only use 2006 - 2019 which covers Gundy’s tenure as head coach. His first year
+was 2005, but his first recruiting class would have been 2006. Conveniently, the
+early signing period for 2019 has already occurred, and with OSU’s 20
+commitments (19 signees and 1 verbal commitment) not much will change on
+February 6, National Signing Day.</p>
+<pre class="r"><code>years &lt;- c(2006:2019)</code></pre>
+<p>The next part is a loop broken into multiple chunks for readability. In here
+there is some text parsing/processing, geocoding, and aggregation. First, I loop
+through every year in the previously declared variable, <code>years</code>, which creates a
+link for each signing class with the <code>page</code> variable.</p>
+<pre class="r"><code>for (year in years) {
+  page &lt;- paste0(&quot;https://oklahomastate.rivals.com/commitments/Football/&quot;, year)</code></pre>
+<p>What follows is how I turned the web table from rivals into a data frame.
+Typically, using a library like <code>rvest</code> is ideal since it can simply much of
+this process using CSS selectors. Unfortunately though, the tables on Rivals are
+generated using JavaScript, not created with pure HTML. This is problematic
+since the page takes some time to load, and the JavaScript content is
+inaccessible with <code>rvest</code> in such circumstances.</p>
+<p>There are ways of getting around this that are a bit more involved, but they
+require more work up-front (e.g., R packages <code>splashr</code> and <code>RSelenium</code>). For
+more long-term projects, these would certainly be more appropriate, but for my
+sake simply extracting all text content from the page and parsing it on the back
+end is sufficient since Rivals’ content is predictable and the tables don’t vary
+in structure from year to year. I’m not sure why a simple <code>GET</code> request with the
+<code>httr</code> package works for extracting the JavaScript-created tables but <code>rvest</code>
+functions do not:</p>
+<pre class="r"><code>  ### create data frame
+  # get the webpage content
+  players.df &lt;- GET(page) %&gt;%
+    # convert content to text
+    content(., &quot;text&quot;) %&gt;%
+    # split by the json&#39;s front end
+    strsplit(., &quot;rv-commitments prospects=&quot;) %&gt;% extract2(1) %&gt;% extract2(2) %&gt;%
+    # split by the json&#39;s back end
+    strsplit(., &quot;&lt;/rv-commitments&quot;) %&gt;% extract2(1) %&gt;% extract2(1) %&gt;%
+    # do a little more parsing
+    strsplit(., paste0(&quot;sport=&#39;football&#39; team-ranking=&#39;teamRanking&#39; year=&#39;&quot;, year,&quot;&#39;&gt;&quot;)) %&gt;%
+    # parse by character position; basically strip out &gt; and &lt;
+    substr(., 2, nchar(.)-2) %&gt;%
+    # convert from json
+    fromJSON() %&gt;%
+    # convert NULLs to NA, list items to data frame columns (character and numeric) and create tibble
+    map_df(., flatten)</code></pre>
+<p>Here, I make extensive use of the pipe character, <code>%&gt;%</code>, which has become my
+best friend lately. While it can be a bit confusing at first, it ultimately
+makes for much more transparent workflow and cleaner code. In the code above, a
+period is frequently used as an argument (e.g., <code>content(., "text") %&gt;%</code>), which
+simply means “the thing (or object) from the previous pipe.” What was puzzling
+to me initially is that with functions where only one argument is required, the
+period is not needed, so it is usually omitted (e.g. <code>some_func() %&gt;%</code>).</p>
+<p>The pipe also requires some alternative function use, like <code>extract2()</code> used in
+place of indexing, which does not work with pipes. Essentially <code>%&gt;% extract2(1) %&gt;% extract(2)</code> means <code>my_obj[1][2]</code>. Then, the use of <code>strsplit</code> to get what I
+needed simply required a bit of trial and error.</p>
+<p>Next, I geocoded (i.e. attached geometry to the locations based on text), to the
+players’ hometowns so that they could be mapped. I was originally using the
+<code>nominatim</code> package for this, but it was inappropriate on a few different
+levels: (1) it is a bit overkill for the simple purpose of getting cities’
+latitude/longitude locations; the <code>nominatim</code> package relies on OpenStreetMap
+which contains hundreds of different feature types. (2) <code>nominatim</code> requires an
+API key and has query limits. While I was not close to hitting the limit in this
+project, I very well could hit it in similar projects in the future. (3) While
+all geocoders occasionally produce erroneous results, <code>nominatim</code> produced more
+errors for me. Given that I only need to geocode city locations and that
+precision is not a major concern, <code>ggmap</code> is a better choice.</p>
+<p>Even with <code>ggmap</code>, however, it is better to use full state or province names
+rather than state abbreviations. Canadian provinces and their abbreviations were
+required in addition to U.S. states, since Oklahoma State attracts a wealth of
+players from the Great White North. These are matched and assigned using the
+<code>match</code> function.</p>
+<pre class="r"><code>  # match results based on table indices
+  players.df$state &lt;- states.df$state[match(players.df$state_abbreviation, states.df$abbrev)]
+
+  # create a field of city, state
+  players.df$home.town &lt;- paste0(players.df$city, &quot;, &quot;, players.df$state)
+
+  # use ggmap geocoder to get geometry
+  home.town.loc &lt;- geocode(players.df$home.town, output = &quot;latlon&quot;, source = &quot;dsk&quot;)
+
+  players.df$lon &lt;- home.town.loc$lon
+  players.df$lat &lt;- home.town.loc$lat</code></pre>
+<p>I then create a data frame out of the first year’s data and append the rows of
+each year’s recruits to the previous. This does not feel very efficient or
+R-like, but it gets the job done. Note that the apparent mismatched bracket is
+paired at the top of the <code>for</code> loop.</p>
+<pre class="r"><code>  # append dataframe rows
+  if (year == min(years)){
+    agg.df &lt;- players.df
+  } else {
+    agg.df &lt;- rbind(agg.df, players.df)
+  }
+}</code></pre>
+<p>Finally, I write the results to a file since the geocoding takes a while and
+this only needs to be done once.</p>
+<pre class="r"><code># save the .csv to a file
+write.csv(agg.df, &quot;osu-recruits.csv&quot;, row.names = FALSE)</code></pre>
+</div>
+</div>
+<div id="mapping-all-recruits" class="section level1">
+<h1>Mapping all recruits</h1>
+<p>For this part, some different libraries are needed. In my repository
+this is actually the start of a separate script, but for the sake of
+brevity I omit redundant lines here (e.g., <code>setwd</code>). The library
+<code>randomcoloR</code> is used to assign colors to points, and <code>leaflet</code> is
+used to create the web maps.</p>
+<pre class="r"><code>library(randomcoloR)
+library(leaflet)</code></pre>
+<p>First, I load the data.</p>
+<pre class="r"><code># load data
+  recruits &lt;- data.frame(read.csv(&quot;osu-recruits.csv&quot;))</code></pre>
+<p>Next, I create a variable containing the years of the study. Rather
+than do this manually with <code>years &lt;- 2006:2019</code>, I simply extract the
+unique years from the necessary column in the <code>recruits</code> data frame.</p>
+<pre class="r"><code># get unique years as a variable
+years &lt;- unique(recruits$year)</code></pre>
+<p>Following this, I generate the color scheme used throughout the study.
+Selecting 14 distinct yet visually appealing colors is surprisingly
+difficult, but the <code>randomcoloR</code> library does this quite well. As the
+name implies, it generates colors randomly, so I use <code>set.seed(3)</code> to
+“fix” the scheme to what I deemed desirable. I tested other schemes
+with <code>set.seed(1)</code> and <code>set.seed(2)</code>, but didn’t like these as much.
+Fixing the color scheme is important since I want to use the same
+color scheme in other scripts. I simply use <code>set.seed(3)</code> prior to the
+line with the <code>distinctColorPalette</code> function, and this replicates my
+desired scheme.</p>
+<pre class="r"><code># create color palette use the randomcoloR library to generate distinct colors -
+# this works betters than functions like &quot;rainbow&quot;
+#
+# I tried a few different random seeds to get this order - this avoids similarly
+# looking colors adjacent to one another (by year)
+set.seed(3)
+colors &lt;- colorFactor(sample(distinctColorPalette(length(years))),
+                      domain = c(min(years):max(years)))</code></pre>
+<p>To create the web maps I use the <code>leaflet</code> package which has great
+documentation and is pleasantly intuitive. It blows my mind how much
+easier it is to create web maps in R rather using pure html and
+JavaScript. Plus, using R makes a wealth of statistical and spatial
+analysis capabilities available directly, and frameworks like Shiny
+and RMarkdown make creating production quality web maps totally
+viable. Since discovering this combination of packages, my mind has
+been reeling with potential applications.</p>
+<p>Creating webs is another place where using pipes makes sense, since
+each line adds something new to the map – sort of like creating a
+layer in a desktop GIS – and avoids having to repeatedly declare a
+<code>map</code> variable. The code below creates a simple base map with the view
+fixed in a location that makes all data points visible. I use Stamen’s
+Toner tiles (as opposed to the default Open Street Map tiles) which
+use only black to avoid conflicts with the 14 different colors of the
+points.</p>
+<pre class="r"><code>map &lt;- leaflet(width = &quot;100%&quot;, height = &quot;650px&quot;) %&gt;%
+  addProviderTiles(providers$Stamen.Toner) %&gt;%
+  setView(lng = -98.33, lat = 38.37, zoom = 4)</code></pre>
+<p>Following this, I use a loop (solution found on Stack Overflow) to
+create a separate layer for each year. This is only necessary since I
+am using <code>overlayGroups</code> to create selectable layers. I make some
+modifications to the default styles like lowering the opacity to give
+a sense of density. Using an even lower opacity (e.g., <code>0.2</code>) does
+this better but makes distinguishing colors more difficult. If the
+point of this project was to show hotbeds of recruits over Gundy’s
+entire tenure (i.e. not from year to year), something like kernel
+density estimation would certainly be a better visualization tool.</p>
+<pre class="r"><code>for (year in years) {
+  data &lt;- recruits[recruits$year == year,]
+  map &lt;- map %&gt;%
+    addCircleMarkers(data = data,
+                     lng = ~lon,
+                     lat = ~lat,
+                     radius = 7,
+                     stroke = FALSE,
+                     color = ~colors(year),
+                     fillOpacity = 0.8,
+                     group = as.character(year))
+  }</code></pre>
+<p>Even with this code above, the map is still not displayed. This final
+snippet displays the map, adds layer control, and adds a legend.</p>
+<pre class="r"><code>map %&gt;%
+  addLayersControl(
+    overlayGroups = years,
+    options = layersControlOptions(collapsed = TRUE)) %&gt;%
+    addLegend(&quot;bottomleft&quot;, pal = colors, values = years, opacity = 1)</code></pre>
+<div style="text-align: center;">
+<h3 id="recruits-hometowns-2006---2019">Recruits’ hometowns (2006 - 2019)</h3>
+</div>
+<div id="htmlwidget-1" style="width:100%;height:650px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Stamen.Toner",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[33.233184,37.830491,32.735687,32.370699,33.42512,32.814018,32.776671,35.491608,33.655162,35.491608,29.813142,30.639285,29.154269,29.813142,27.703829,40.756095,30.773109,35.840669,30.579623,29.630032,33.00291,35.70582,32.472864,29.813142,29.813142,29.709171,33.072279,31.552011,32.777779],[-94.133243,-96.865969,-97.108066,-96.240533,-94.04769,-96.948895,-97.009389,-97.562817,-95.605194,-97.562817,-95.309789,-96.362454,-95.406577,-95.309789,-98.055296,-111.900719,-89.112944,-84.32153,-95.895889,-95.64241,-96.875,-95.50025,-84.97823,-95.309789,-95.309789,-96.486458,-83.239008,-97.1382,-96.62315],7,null,"2006",{"interactive":true,"className":"","stroke":false,"color":["#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1","#DAAFD1"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[29.813142,35.390376,32.931523,31.301706,32.321937,29.374626,29.162771,30.04772,33.608922,34.143407,31.554423,32.777779,35.74925,30.1252,35.491608,32.370699,33.332852,35.491608,30.3491,39.373122,33.181157,29.578734,29.813142],[-95.309789,-97.759874,-96.615821,-94.641414,-95.302223,-94.998361,-98.175887,-95.532441,-91.207356,-101.20432,-96.871366,-96.62315,-79.685831,-91.83345,-97.562817,-96.240533,-96.726103,-97.562817,-94.17796,-111.62523,-96.497182,-97.951829,-95.309789],7,null,"2007",{"interactive":true,"className":"","stroke":false,"color":["#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460","#82E460"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[34.156627,30.841022,32.777779,37.830491,32.043193,29.38384,31.552011,37.821629,30.841022,32.735687,29.364948,35.877129,39.373122,31.249621,35.29089,35.169255,32.213061,34.98313,31.611088,33.604131,37.0373,37.830491,32.370699,33.835665,33.233184,37.830491,32.56319],[-97.179214,-97.30361,-96.62315,-96.865969,-96.350943,-94.9027,-97.1382,-94.714793,-97.30361,-97.108066,-98.909219,-97.456312,-111.62523,-96.885602,-97.81227,-89.990415,-94.783436,-85.28607,-89.171825,-96.550405,-95.61637,-96.865969,-96.240533,-118.303805,-94.133243,-96.865969,-97.14168],7,null,"2008",{"interactive":true,"className":"","stroke":false,"color":["#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9","#D766C9"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.370699,33.870292,36.039147,41.130604,32.472864,35.491608,29.73356,31.70128,32.043193,36.26954,30.383369,29.837562,36.842401,35.491608,37.14645,32.13988,36.402681,36.039147,33.608922,35.192,34.099031,30.756774,33.952602,37.821629,34.748961,41.401881],[-96.240533,-117.925338,-95.868667,-85.12886,-84.97823,-97.562817,-95.23021,-90.39759,-96.350943,-95.85471,-96.008619,-95.733756,-94.854482,-97.562817,-94.463,-95.32023,-97.843091,-95.868667,-91.207356,-102.06464,-83.71817,-89.58072,-84.549933,-94.714793,-96.685325,-75.637626],7,null,"2009",{"interactive":true,"className":"","stroke":false,"color":["#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3","#D8DFD3"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.321937,32.735687,29.813142,33.332852,30.577149,32.27795,33.786594,33.233184,32.91747,32.791087,32.321937,35.491608,30.846986,37.651974,32.370699,28.053073,31.164336,33.42512,35.491608,29.813142,33.72455,32.735687,30.577149,29.813142,29.618567,29.73356,37.566129],[-95.302223,-97.108066,-95.309789,-96.726103,-94.686315,-95.067302,-118.298662,-94.133243,-96.534737,-94.999833,-95.302223,-97.562817,-95.597029,-97.258997,-96.240533,-82.742879,-99.505894,-94.04769,-97.562817,-95.309789,-92.61571,-97.108066,-94.686315,-95.309789,-95.537722,-95.23021,-97.228475],7,null,"2010",{"interactive":true,"className":"","stroke":false,"color":["#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A","#DDDD5A"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.814018,33.149467,35.479157,35.390376,29.56162,33.772554,33.019843,35.95537,30.579623,33.181157,32.370699,33.019843,31.558383,32.043193,33.149467,32.576489,33.149467,26.10035,30.577149,35.187133,35.221997,29.837562,30.216516,32.800434,29.813142,37.98869],[-96.948895,-97.096016,-94.193334,-97.759874,-98.22696,-84.291723,-96.698886,-96.00888,-95.895889,-96.497182,-96.240533,-96.698886,-94.504452,-96.350943,-97.096016,-99.665323,-97.096016,-98.26307,-94.686315,-117.885359,-101.831297,-95.733756,-96.385104,-97.192762,-95.309789,-84.47772],7,null,"2011",{"interactive":true,"className":"","stroke":false,"color":["#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9","#84E4D9"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[31.73452,34.1851,31.164336,35.491608,30.577149,38.637002,32.800434,33.149467,34.09038,30.216516,32.183133,32.69596,29.73356,39.764434,35.491608,33.544833,29.64609,30.442737,37.651974,32.321937,32.043193,35.187133,29.049969,35.943419],[-95.531381,-83.92518,-99.505894,-97.562817,-94.686315,-90.650024,-97.192762,-97.096016,-96.77167,-96.385104,-94.309189,-97.60225,-95.23021,-89.564045,-97.562817,-111.957563,-95.794526,-97.597055,-97.258997,-95.302223,-96.350943,-117.885359,-98.399458,-95.415011],7,null,"2012",{"interactive":true,"className":"","stroke":false,"color":["#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD","#87BADD"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.370699,32.434599,29.813142,29.56162,30.04772,29.51801,38.64068,38.434153,32.188097,32.56319,32.259774,32.8172,32.814018,33.08447,34.112373,32.8172,32.701461,31.552011,39.373122,30.577149,35.29089,32.599427,34.1851,32.735687],[-96.240533,-99.781827,-95.309789,-98.22696,-95.532441,-98.31612,-90.44341,-96.152766,-95.882391,-97.14168,-90.091589,-97.180586,-96.948895,-94.242023,-84.30205,-97.180586,-114.657232,-97.1382,-111.62523,-94.686315,-97.81227,-96.864075,-83.92518,-97.108066],7,null,"2013",{"interactive":true,"className":"","stroke":false,"color":["#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C","#C2DE9C"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[29.813142,32.599427,32.869561,35.491608,29.561554,42.43026,33.233184,33.85455,36.006567,29.56162,26.297428,30.577149,29.709171,38.000771,29.813142,34.92487,30.204707,37.676732,36.039147,33.690667,31.73452,32.370699,30.068812,35.491608,32.188097,30.068812,29.813142,29.364948],[-95.309789,-96.864075,-99.808377,-97.562817,-95.279739,-93.253363,-94.133243,-84.21714,-95.980972,-98.22696,-97.98837,-94.686315,-96.486458,-100.664407,-95.309789,-81.02508,-90.869481,-92.043738,-95.868667,-97.34502,-95.531381,-96.240533,-89.930956,-97.562817,-95.882391,-89.930956,-95.309789,-98.909219],7,null,"2014",{"interactive":true,"className":"","stroke":false,"color":["#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3","#A944E3"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[30.45886,29.83399,33.28589,33.181157,30.646585,29.691345,33.32865,31.992384,37.830491,32.822624,35.208566,37.830491,31.068306,32.370699,32.321937,32.56319,34.160236,32.66066,30.159092,37.830491],[-90.156595,-95.434241,-101.339267,-96.497182,-90.974252,-96.70192,-111.583739,-102.081464,-96.865969,-88.478138,-97.44451,-96.865969,-97.3047,-96.240533,-95.302223,-97.14168,-118.515472,-96.911882,-92.176237,-96.865969],7,null,"2015",{"interactive":true,"className":"","stroke":false,"color":["#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5","#6EE3A5"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[36.006567,36.039147,37.954312,32.59208,32.963417,33.637061,38.988075,44.810062,35.491608,35.34496,32.573112,32.599427,30.216516,34.612417,33.28589,51.05011,36.201495,35.652832,32.599427,32.735687,32.525152,37.821629],[-95.980972,-95.868667,-97.88569,-96.756108,-96.984664,-104.377926,-95.780662,-93.653336,-97.562817,-97.604196,-93.699378,-96.864075,-96.385104,-92.493519,-101.339267,-114.08529,-86.289544,-97.478095,-96.864075,-97.108066,-93.750179,-94.714793],7,null,"2016",{"interactive":true,"className":"","stroke":false,"color":["#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E","#E1A76E"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[36.842401,32.791087,29.049969,32.931523,32.735687,31.748753,32.701461,35.943419,32.797048,32.370699,29.049969,33.149467,53.51684,38.000771,33.61011,37.573485,35.491608,36.448241,35.491608,39.373122,33.253448],[-94.854482,-94.999833,-98.399458,-96.615821,-97.108066,-83.235412,-114.657232,-95.415011,-96.561606,-96.240533,-98.399458,-97.096016,-113.3187,-100.664407,-84.287978,-122.32253,-97.562817,-95.704667,-97.562817,-111.62523,-96.43554],7,null,"2017",{"interactive":true,"className":"","stroke":false,"color":["#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77","#E15D77"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.963417,36.039147,33.28589,30.577149,32.93123,30.609093,32.370699,35.491608,33.608922,32.525152,29.813142,35.29089,39.787385,34.520837,35.491608,33.149467,36.842401,32.188097,31.185738,32.976233,37.086172,33.745573,29.56162,32.93123],[-96.984664,-95.868667,-101.339267,-94.686315,-96.45971,-96.325984,-96.240533,-97.562817,-91.207356,-93.750179,-95.309789,-97.81227,-88.274137,-96.996244,-97.562817,-97.096016,-94.854482,-95.882391,-95.63856,-96.59527,-97.037967,-117.867834,-98.22696,-96.45971],7,null,"2018",{"interactive":true,"className":"","stroke":false,"color":["#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7","#8B86D7"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[32.431364,29.837562,32.525152,39.02315,29.837562,32.416897,33.12123,35.187133,37.954312,35.491608,35.652832,33.690667,32.779306,39.373122,33.089587,34.143407,32.370699,29.56162,36.039147,36.201495],[-96.978849,-95.733756,-93.750179,-94.669467,-95.733756,-104.46539,-97.18335,-117.885359,-97.88569,-97.562817,-97.478095,-97.34502,-94.409362,-111.62523,-96.607767,-101.20432,-96.240533,-98.22696,-95.868667,-86.289544],7,null,"2019",{"interactive":true,"className":"","stroke":false,"color":["#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F","#7C866F"],"fillOpacity":0.8},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLayersControl","args":[[],[2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019],{"collapsed":true,"autoZIndex":true,"position":"topright"}]},{"method":"addLegend","args":[{"colors":["#DAAFD1","#82E460","#D766C9","#D8DFD3","#DDDD5A","#84E4D9","#87BADD","#C2DE9C","#A944E3","#6EE3A5","#E1A76E","#E15D77","#8B86D7","#7C866F"],"labels":["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomleft","type":"factor","title":null,"extra":null,"layerId":null,"className":"info legend","group":null}]}],"setView":[[38.37,-98.33],4,[]],"limits":{"lat":[26.10035,53.51684],"lng":[-122.32253,-75.637626]}},"evals":[],"jsHooks":[]}</script>
+<p>Originally I used popup markers so that you could click on a point and
+see the player’s name and hometown, but since multiple players can
+come from the same town, there are many overlapping points. From what
+I can see, Leaflet has no effective way of handling these, and you can
+only click on the top point. I was a bit confused before I realized
+this - clicking on Tulsa, I did see Justice Hill, for instance. To
+avoid confusion I just omitted this feature.</p>
+</div>
+<div id="measures-of-location-and-dispersion" class="section level1">
+<h1>Measures of location and dispersion</h1>
+<p>Though this web map is fun to play around with, it does not tell us
+anything definitive about patterns over time. Humans are notoriously
+bad at detecting spatial patterns visually, which works out well for
+me as it provides job security. Due this, I use several metrics: mean
+center, median center, and standard deviation.</p>
+<div id="mean-centers" class="section level2">
+<h2>Mean centers</h2>
+<p>The mean center is a straightforward measure that simply averages the
+longitude and latitude values (separately, of course). Using a
+geographic coordinate system always necessitates caution, since
+distance calculations often don’t work as intended – a degree of
+latitude and a degree of longitude are unequal except at the equator.
+In this case, however, the latitude and longitude means are calculated
+separately, so this conniption does not pose any problems.</p>
+<pre class="r"><code>  # get the mean center for each year
+  mean.centers &lt;- data.frame(year = years, lon = NA, lat = NA)
+
+  for (year in years) {
+    mean.centers$lon[mean.centers$year == year] &lt;- mean(recruits$lon[recruits$year == year])
+    mean.centers$lat[mean.centers$year == year] &lt;- mean(recruits$lat[recruits$year == year])
+  }</code></pre>
+<p>This time I set the view programmatically based on the data’s mean
+center. Yet, this cuts off view of the year 2016 which lies farther
+north than any other point, so I add <code>0.4</code> to the starting latitude
+view. I use the same color scheme as before, but I leave the opacity
+alone since there are no overlapping points.</p>
+<pre class="r"><code>  # create map of mean centers
+  leaflet(width = &quot;100%&quot;, height = &quot;500px&quot;) %&gt;%
+    addTiles() %&gt;%
+    setView(lng = mean(mean.centers$lon), lat = mean(mean.centers$lat)+0.4, zoom = 7) %&gt;%
+    addCircleMarkers(data = mean.centers,
+                     lng = ~lon,
+                     lat = ~lat,
+                     label = ~as.character(year),
+                     labelOptions = labelOptions(noHide = TRUE,
+                                                 direction = &quot;bottomleft&quot;),
+                     radius = 7,
+                     stroke = FALSE,
+                     color = ~colors(year),
+                     fillOpacity = 1)</code></pre>
+<div style="text-align: center;">
+<h3 id="mean-centers-of-recruits-hometowns-2006---2019">Mean centers of recruits’ hometowns (2006 - 2019)</h3>
+</div>
+<div id="htmlwidget-2" style="width:100%;height:500px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[32.4981572758621,32.4906436521739,33.8303961481481,34.4995263461538,32.3772710740741,32.6351422692308,33.2394371666667,33.0204913333333,32.6234248214286,32.9622822,35.7136810454545,34.9938436190476,33.5405291666667,34.0363926],[-95.2366166896552,-96.0615453478261,-97.0047632592593,-93.8981201153846,-96.1856751111111,-96.6551915384615,-97.0640337083333,-96.5329255833333,-94.7222086428571,-97.7440971,-96.9784737727273,-99.1936959047619,-96.9183307916667,-98.35720555],7,null,null,{"interactive":true,"className":"","stroke":false,"color":["#DAAFD1","#82E460","#D766C9","#D8DFD3","#DDDD5A","#84E4D9","#87BADD","#C2DE9C","#A944E3","#6EE3A5","#E1A76E","#E15D77","#8B86D7","#7C866F"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#DAAFD1","#82E460","#D766C9","#D8DFD3","#DDDD5A","#84E4D9","#87BADD","#C2DE9C","#A944E3","#6EE3A5","#E1A76E","#E15D77","#8B86D7","#7C866F"],"fillOpacity":1},null,null,null,null,["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019"],{"interactive":false,"permanent":true,"direction":"bottomleft","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[33.8615156227314,-96.610920222527],7,[]],"limits":{"lat":[32.3772710740741,35.7136810454545],"lng":[-99.1936959047619,-93.8981201153846]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="median-centers" class="section level2">
+<h2>Median centers</h2>
+<p>Due to the intermittent recruits from California, the Northeast, and
+Canada – Chuba Hubbard’s hometown, for example, lies at a whopping
+53.5 degrees north – mapping the median center is a good idea as this
+metric reduces the influence of outliers. This code is identical to
+the previous except that it calculates medians instead of means. I
+still use the mean center (plus the same minor correction mentioned
+earlier) to generate the starting view so that the two are consistent.</p>
+<pre class="r"><code># get median center for each year
+median.centers &lt;- data.frame(year = years, lon = NA, lat = NA)
+
+for (year in years) {
+  median.centers$lon[median.centers$year == year] &lt;- median(recruits$lon[recruits$year == year])
+  median.centers$lat[median.centers$year == year] &lt;- median(recruits$lat[recruits$year == year])
+}
+
+leaflet(width = &quot;100%&quot;, height = &quot;500px&quot;) %&gt;%
+  addTiles() %&gt;%
+  setView(lng = mean(mean.centers$lon), lat = mean(mean.centers$lat)+0.4, zoom = 7) %&gt;%
+  addCircleMarkers(data = median.centers,
+                   lng = ~lon,
+                   lat = ~lat,
+                   label = ~as.character(year),
+                   labelOptions = labelOptions(noHide = TRUE,
+                                               direction = &quot;bottomleft&quot;),
+                   radius = 7,
+                   stroke = FALSE,
+                   color = ~colors(year),
+                   fillOpacity = 1)</code></pre>
+<div style="text-align: center;">
+<h3 id="median-centers-of-recruits-hometowns-2006---2019">Median centers of recruits’ hometowns (2006 - 2019)</h3>
+</div>
+<div id="htmlwidget-3" style="width:100%;height:500px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[32.735687,32.370699,33.233184,34.423996,32.370699,32.9169305,32.748197,32.650444,32.279398,32.611925,34.9786885,33.253448,33.06285,33.4059485],[-95.895889,-96.497182,-96.865969,-95.526993,-95.309789,-96.598034,-96.578387,-96.906485,-95.700024,-96.865969,-96.8100915,-97.096016,-96.45971,-97.0810995],7,null,null,{"interactive":true,"className":"","stroke":false,"color":["#DAAFD1","#82E460","#D766C9","#D8DFD3","#DDDD5A","#84E4D9","#87BADD","#C2DE9C","#A944E3","#6EE3A5","#E1A76E","#E15D77","#8B86D7","#7C866F"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#DAAFD1","#82E460","#D766C9","#D8DFD3","#DDDD5A","#84E4D9","#87BADD","#C2DE9C","#A944E3","#6EE3A5","#E1A76E","#E15D77","#8B86D7","#7C866F"],"fillOpacity":1},null,null,null,null,["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019"],{"interactive":false,"permanent":true,"direction":"bottomleft","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[33.8615156227314,-96.610920222527],7,[]],"limits":{"lat":[32.279398,34.9786885],"lng":[-97.096016,-95.309789]}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="dispersion" class="section level2">
+<h2>Dispersion</h2>
+<p>Using the median significantly reduces the amount of east-west
+variability and makes 2009 and 2016 stand out from the other years.
+However, this approach does not consider dispersion. If Oklahoma State
+received all of its recruits from Dallas during one year and zero
+recruits from Dallas during another year, the two /could/ still have
+the exact same mean or median center. I compare standard deviation of
+distance from Stillwater by year in a later chart, but I thought it
+would be useful to visualize dispersion by creating lines from
+Stillwater to every recruits’ hometown.</p>
+<p>This process also requires some different libraries, particularly for
+creating lines (e.g., the <code>st_cast</code> function from <code>sf</code>) and converting
+units (<code>udunits2</code>). Advantageously, this approach displays both
+distance and direction from Stillwater. It should be noted that the
+<code>sf</code> library utilizes geodetic distance by default when a geographic
+coordinate system is used.</p>
+<pre class="r"><code>  library(sp)
+  library(sf)
+  library(udunits2)
+
+  multipoints &lt;- st_multipoint(as.matrix(recruits[,c(&quot;lon&quot;, &quot;lat&quot;)]))
+  points &lt;- st_cast(st_geometry(multipoints), &quot;POINT&quot;)
+
+  # create point for just stillwater
+  stillwater &lt;- st_geometry(st_point(c(-97.0665, 36.1257)))
+  st_crs(stillwater)  &lt;- &quot;+init=epsg:4326&quot;
+
+
+  for (k in years) {
+    multipoints &lt;- st_multipoint(as.matrix(recruits[,c(&quot;lon&quot;, &quot;lat&quot;)][recruits$year == k,]))
+    points &lt;- st_cast(st_geometry(multipoints), &quot;POINT&quot;)
+    st_crs(points)  &lt;- &quot;+init=epsg:4326&quot;
+
+    for (i in 1:length(points)) {
+      # combine each point with stillwater to make a pair of points
+      pair &lt;- st_combine(c(points[i], stillwater))
+      dist &lt;- st_distance(points[i], stillwater) %&gt;%
+        # convert from meters to miles
+        ud.convert(., &quot;m&quot;, &quot;mi&quot;)
+
+      # create a line from this pair of points
+      line &lt;- st_cast(pair, &quot;LINESTRING&quot;)
+
+      # combine lines into multilinestring for plotting and combine distances
+      # together for computations
+      if (i == 1) {
+        lines &lt;- line
+        distances &lt;- dist
+      } else {
+        lines &lt;- st_combine(c(lines, line))
+        distances &lt;- append(distances, dist)
+      }
+    }
+
+    ### distances ###
+    # append to dataframe
+    if (k == min(years)) {
+      dist.df &lt;- data.frame(distance = as.numeric(distances), year = k)
+    } else {
+      tmp.df &lt;- data.frame(distance = as.numeric(distances), year = k)
+      dist.df &lt;- rbind(dist.df, tmp.df)
+    }
+
+    ### lines ###
+    # covert to sp object
+    lines.sldf &lt;- sf:::as_Spatial(lines)
+
+    # assign year to column
+    lines.sldf$year &lt;- k
+
+    if (k == min(years)) {
+      lines.all &lt;- lines.sldf
+    } else {
+      lines.all &lt;- rbind(lines.all, lines.sldf)
+    }
+  }
+
+  # set colors
+  set.seed(3)
+  colors &lt;- sample(distinctColorPalette(length(years)))
+
+  # set up plot space
+  par(mfrow=c(5,3))
+  par(mar = c(2,2,2,2))
+
+  # plot lines, each on a separate space
+  for (i in 1:length(lines.all$year)) {
+    plot(lines.all[lines.all$year == lines.all$year[i],],
+         col = colors[i])
+         #xlim = c(bbox(lines.all)[1],bbox(lines.all)[2]), # this looks really weird
+         #ylim = c(bbox(lines.all)[3],bbox(lines.all)[4]))
+    title(years[i])
+  }</code></pre>
+<div style="text-align: center;">
+<h3 id="distance-and-direction-of-recruits-hometowns-to-stillwater">Distance and direction of recruits’ hometowns to Stillwater</h3>
+</div>
+<p><img src="/post/osu-fb-recruiting-tech_files/figure-html/unnamed-chunk-22-1.png" width="100%" /></p>
+<p>One problem incurred here is that the scale is not consistent from plot to plot.
+This makes it look as though the distance from Stillwater is low in 2014, when
+in reality its standard deviation is low but its median distance from Stillwater
+is <em>the greatest in the entire set</em>. Due to this, I think it’s useful to
+visualize mean distance, median distance, and standard deviation on a plot as
+well. There were some weird formatting issues with the image, so I saved it as a
+.png instead of rendering it within the .Rmd directly.</p>
+<pre class="r"><code># create vectors of means, medians, and standard deviation by year
+mean.dist &lt;- tapply(dist.df$distance, dist.df$year, mean)
+median.dist &lt;- tapply(dist.df$distance, dist.df$year, median)
+sd.dist &lt;- tapply(dist.df$distance, dist.df$year, sd)
+
+# create data frame of these three vectors
+summary.df &lt;- data.frame(mean = mean.dist,
+                         median = median.dist,
+                         sd = sd.dist)
+
+png(&quot;../img/summary.png&quot;,
+    width = 800,
+    height = 800,
+    units = &quot;px&quot;,
+    res = 110)
+plot.new()
+par(mfrow=c(3,1))
+par(mar = c(4,4,4,4))
+
+# plot for mean
+plot(summary.df$mean,
+     type = &quot;l&quot;,
+     xlab = &quot;&quot;,
+     ylab = &quot;Distance (miles)&quot;,
+     xaxt = &quot;n&quot;, # remove xaxis labels; add them in the next line
+     xaxs = &quot;i&quot;) # remove excess space in the plot
+title(&quot;Mean distance from Stillwater&quot;)
+labs &lt;- years
+axis(side=1, labels=labs, at=c(1:length(years)))
+
+# plot for median
+plot(summary.df$median,
+     type = &quot;l&quot;,
+     xlab = &quot;&quot;,
+     ylab = &quot;Distance (miles)&quot;,
+     xaxt = &quot;n&quot;, # remove xaxis labels; add them in the next line
+     xaxs = &quot;i&quot;) # remove excess space in the plot
+title(&quot;Median distance from Stillwater&quot;)
+labs &lt;- years
+axis(side=1, labels=labs, at=c(1:length(years)))
+
+# plot for standard deviation
+plot(summary.df$sd,
+     type = &quot;l&quot;,
+     xlab = &quot;&quot;,
+     ylab = &quot;Distance (miles)&quot;,
+     xaxt = &quot;n&quot;, # remove xaxis labels; add them in the next line
+     xaxs = &quot;i&quot;) # remove excess space in the plot
+title(&quot;Standard deviation of distance from Stillwater&quot;)
+labs &lt;- years
+axis(side=1, labels=labs, at=c(1:length(years)))
+dev.off()</code></pre>
+<div style="text-align: center;">
+<h3 id="mean-median-and-standard-deviation-of-recruits-distance-from-stillwater">Mean, median, and standard deviation of recruits’ distance from Stillwater</h3>
+</div>
+<p><img src="/home/matt/git-repos/okstate-fb-recruiting/img/summary.png" width="100%" /></p>
+<p>From these, it’s difficult to see any meaningful trend in the data.
+While 14 years as a head coach is a long time in the world of NCAA
+football, from a statistical perspective it’s not a large sample size.
+It would be nice to examine trends with more data from the past, but
+Rivals only reaches back to 2002.</p>
+</div>
+</div>

@@ -6,6 +6,9 @@ title : "The Geography of Oklahoma State Football Recruiting"
 summary : "A programmatic approach to the spatial dimensions of recruiting over time"
 math : false
 comments : true
+output:
+  html_document:
+    self_contained: true
 ---
 
 # Introduction
@@ -142,7 +145,7 @@ standard deviation of distance from Stillwater.
 ### Mean, median, and standard deviation of recruits' distance from Stillwater
 </div>
 ```{r, echo = FALSE, message = FALSE, out.width = "100%"}
-knitr::include_graphics("/home/matt/git-repos/okstate-fb-recruiting//img/summary.png")
+knitr::include_graphics("https://gitlab.com/mhaffner/okstate-fb-recruiting/raw/master/img/summary.png")
 ```
 
 Again, no systematic trends appear, although the median distance from Stillwater
@@ -161,6 +164,9 @@ that there are plenty of sufficiently talented players in Oklahoma State's
 recruiting hubs. The challenge is recruiting *better* players from those
 locations. As mentioned earlier, this study did not consider recruits' high
 school or JUCO ratings.
+
+While 2009 and 2016 have noticeably different mean centers than the other
+years...  
 
 While it is a bit disappointing to not find something juicier, there are several
 logical ways this small project could be extended. First and foremost, the
