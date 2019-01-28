@@ -1,0 +1,190 @@
+---
+date: "2019-01-28T13:09:13-06:00"
+draft : true
+tags : ["Spatial statistics", "geography", "college football", "recruiting"]
+title : "The Geography of Oklahoma State Football Recruiting"
+summary : "A programmatic approach to the spatial dimensions of recruiting over time"
+math : false
+comments : true
+---
+
+# Introduction
+Anyone who reads listens to Gundy's press conferences around signing day or
+reads PFB articles on recruiting knows that Oklahoma State Football's recruiting
+practices are heavily scrutinized. The writers of PFB have pointed out that
+Gundy's attitude toward recruiting seems to have changed. Where the mantra used
+to be "recruiting is the most important thing we do", it now seems less
+important. With his recent contract extension and seemingly nonchalant attitude
+toward disappointing results in the 2018 season, some have accused Gundy of
+becoming complacent, particularly in the area of recruiting. Though Oklahoma
+State has historically overperformed based on its recruiting class rankings, the
+ceiling is capped with mediocre recruits. As a geographer, I naturally wonder
+how the locational aspects of Oklahoma State's recruiting practices have changed
+over time, and that's what I'll be discussing in this piece.
+
+Rather than making a prediction beforehand about how changes have occurred,
+(e.g., Gundy has become less effective in recruiting within the region, or, on
+the other hand, the geographic variability has shrunk over time) my approach is
+more exploratory. I'm simply looking for an observable inflection point -- or
+consistent changes over time -- that help explain /how/ Gundy's recruiting
+practices have changed with his apparent change in attitude.
+
+Before I begin, I must make a few disclaimers. First, a change in the spatial
+practices of OSU recruits does not mean lower quality athletes, and this
+approach does not consider recruits' rankings. Few people would complain if OSU
+/only/ signed players from Texas... if those players /all/ happened to be the
+top 20-ish in the state, or if OSU landed zero players within a 500 miles radius
+of Stillwater but received all four and five star recruits from California,
+Washington, New York, and Florida. Additionally, recruiting isn't all on Gundy -
+it's a group effort among all coaches, and assistants can have considerable
+influence in where players sign (e.g., consider Marcus Arroyo).
+
+That said, recruiting starts with the head coach, and caveats aside, geography
+clearly matters. Virtually every university signs more recruits from near than
+far, and I would argue that Oklahoma State faces considerably different
+recruiting challenges than other similarly sized schools in other parts of the
+country (e.g., Washington State, Clemson, or Boise State). Conference alignment
+matters, as do the locations of other schools in the conference, recruits'
+distance from family and friends, the weather, culture, or other personal
+factors related to location. My colleagues who are Nebraska alums bemoan the
+Huskers' de-emphasis on local recruiting that escalated in the early 2000s, and
+it's hard to ignore the struggles that Nebraska, Missouri, and Colorado have
+faced since leaving the Big XII.
+
+The spatialities of recruiting have mostly been beaten like a dead horse in the
+world of sports geography, so I wanted to do something a bit unconventional by
+exploring more than just the locations of where recruits come from. In this
+piece investigate (1) change by year over Gundy's entire tenure, (2) measures of
+central spatial tendency like the mean and median center, (3) a measure of
+dispersion (i.e. standard deviation of distance from Stillwater), and (4)
+interactive visualizations (web maps). For all analyses and visualization I use
+the R Project for Statistical Computing, and I retrieved data on Oklahoma
+State's recruits from Rivals.com. If you're interested in the technical aspects
+or source code, you can read about them
+[here](mhaffner.github.io/posts/osu-fb-recruiting-tech.html).
+
+# All recruits
+First, I map the hometowns (or in the case of transfers, previous
+locations) of all signees recruited during Gundy's tenure, with 2005 excluded
+since the players during this year were not his recruits.
+
+<div style="text-align: center;">
+### Recruits' hometowns (2006 - 2019)
+</div>
+```{r, code = readLines("/home/matt/git-repos/okstate-fb-recruiting/scripts/map-all-recruits.R"), echo = FALSE, message = FALSE}
+```
+
+The majority of recruits outside of Oklahoma come from Texas (no surprise),
+particularly Dallas, Houston, and the eastern half of the state in general. One
+one hand this appears to be simply an artifact of proximity to major population
+centers (i.e. Dallas and Houston), yet there appears to be a disproportionate
+number of recruits from Texas (and Kansas) compared to Arkansas or Missouri.
+Outside of Oklahoma's bordering states, several small clusters can be seen near
+Atlanta, southern Louisiana and Mississippi, and southern California.
+
+# Central tendency and dispersion
+The field of spatial statistics exists in part because humans are notoriously
+bad at recognizing spatial patterns. Though this web map is fun to play with and
+displays general distributions, it doesn't tell us anything definitive about
+patterns over time. Rather than just eyeballing recruits locations year-to-year,
+I assess trends using two measures of central tendency (i.e. geographic centers)
+-- the mean and median center -- and a measure of dispersion: standard deviation
+of distance from Stillwater.
+ 
+Mean and median centers are calculated as one would expect, except utilizing two
+dimensions (latitude and longitude) instead of one. Rather than comparing these
+separately, I think they are useful to view together. Medians reduce the
+influence of outliers, which in this case are introduced by intermittent
+recruits from California, the Northeast, and Canada. Chuba Hubbard's hometown,
+for example, lies at a whopping **53.5 degrees north**. In most cases --
+especially when underlying distributions are not assessed first -- the median is
+a more appropriate measure.
+
+<div style="text-align: center;">
+### Mean centers of recruits' hometowns (2006 - 2019)
+</div>
+```{r, code = readLines("/home/matt/git-repos/okstate-fb-recruiting/scripts/map-mean-centers.R"), echo = FALSE, message = FALSE}
+```
+
+<div style="text-align: center;">
+### Median centers of recruits' hometowns (2006 - 2019)
+</div>
+```{r, code = readLines("/home/matt/git-repos/okstate-fb-recruiting/scripts/map-median-centers.R"), echo = FALSE, message = FALSE}
+```
+Using the median center significantly reduces the amount of east-west
+variability and makes 2009 and 2016 stand out from the other years. Aside from
+these years, the centers appear to remain remarkably stable, including recent
+years (2017 - 2019), with no apparent systematic change over time.
+
+# Dispersion
+While informative, these measures do not consider dispersion or within-year
+variability. For example, if Oklahoma State received all of its recruits from
+Dallas during one year and zero recruits from Dallas during another year, the
+two years /could/ still have the exact same mean or median center (that said,
+2009 and 2016 have similarly dispersed patterns compared to other years). Next,
+I create a plot showing the distance and direction from each recruit's hometown
+to Stillwater by year.
+
+<div style="text-align: center;">
+### Distance and direction of recruits' hometowns to Stillwater
+</div>
+```{r, code = readLines("/home/matt/git-repos/okstate-fb-recruiting/scripts/plot-lines.R"), echo = FALSE, message = FALSE, out.width = "100%"}
+```
+
+This plot displays some intriguing patterns. In each of the years 2007, 2010,
+and 2011 Oklahoma State signed *only one player* from north of Stillwater (2015
+appears this way too, but actually two signees came from El Dorado, KS),
+emphasizing the importance of Texas -- and other parts of the southern US -- to
+its recruiting efforts. Next, I create a plot comparing mean, median, and
+standard deviation of distance from Stillwater.
+
+<div style="text-align: center;">
+### Mean, median, and standard deviation of recruits' distance from Stillwater
+</div>
+```{r, echo = FALSE, message = FALSE, out.width = "100%"}
+knitr::include_graphics("/home/matt/git-repos/okstate-fb-recruiting//img/summary.png")
+```
+
+Again, no systematic trends appear, although the median distance from Stillwater
+is less in 2016 - 2019 than any previous years. That said, standard deviation is
+not less during these years; in fact, 2017 has the greatest standard deviation
+of any year (largely thanks to Chuba Hubbard).
+
+# Conclusion
+So what does all of this mean? I think the most straightforward takeaway is that
+the geography of Oklahoma State's recruiting practices has remained fairly
+stable over Gundy's tenure. If Gundy has become complacent, it's not appearing
+in recruits' locational distributions. That said, there is one glaringly
+relevant takeaway to the future of Oklahoma State football. That is, the array
+of locations from which players come appears to be *good enough* in the sense
+that there are plenty of sufficiently talented players in Oklahoma State's
+recruiting hubs. The challenge is recruiting *better* players from those
+locations. As mentioned earlier, this study did not consider recruits' high
+school or JUCO ratings.
+
+While it is a bit disappointing to not find something juicier, there are several
+logical ways this small project could be extended. First and foremost, the
+effect of distance on the *quality* of recruits may be revealing. For example,
+are signees from farther away rated lower those close to Stillwater? If so,
+would this give *some* credence to the idea that "it's difficult to get players
+to come to Stillwater" (at least under current conditions with the present
+efforts and strategies put into recruiting). Or on the flipside, if results were
+insignificant, perhaps Oklahoma State could be more aggressive in offering
+higher rated recruits from farther away. This could be completed simply with a
+correlation analysis, or many factors could be tested through regression
+analysis.
+
+What could be even more informative, however, is a comparative study with
+another similar university -- either one in the Big XII, similarly positioned
+regionally[^1], or a comparatively sized university in another part of the
+country. With the [recent comparisons of Oklahoma State to
+Clemson](https://pistolsfiringblog.com/reader-thoughts-what-does-an-oklahoma-state-clemson-comp-look-like/),
+a side-by-side comparison of Oklahoma State to this year's national champions
+may make for a fascinating study.
+
+If you catch something that I didn't see or have another idea for a follow-up
+study, feel free to point it out in the comments!
+
+# Footnotes
+
+[^1]: I heard there is one in Cleveland County but I can't remember its name.
