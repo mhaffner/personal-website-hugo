@@ -6,6 +6,7 @@ title : "The Geography of Oklahoma State Football Recruiting: Technical Approach
 summary : "Web scraping, text processing, mapping, and statistical analysis"
 math : false
 comments : true
+---
 
 # Introduction
 In this piece I'm going to describe in detail the technical aspects behind a
@@ -13,7 +14,8 @@ recent a recent project that I wrote about [here] on the geography of Oklahoma
 State football's recruiting practices. This project involves extracting web
 content, processing text, geocoding, web mapping, and some basic exploratory
 spatial data analysis. I met a number of unexpected challenges along the way and
-I hope this will serve to help others facing similar issues.
+I hope this will serve to help others facing similar issues. These scripts are
+also available in full in a [repository on GitLab](https://gitlab.com/mhaffner/okstate-fb-recruiting).
 
 # Extracting and processing text from the web
 Initially I was planning on just using the rosters provided on Oklahoma State's
@@ -295,7 +297,7 @@ only click on the top point. I was a bit confused before I realized
 this - clicking on Tulsa, I did see Justice Hill, for instance. To
 avoid confusion I just omitted this feature.
 
-# Measures of location and dispersion
+# Measures of central tendency and dispersion
 Though this web map is fun to play around with, it does not tell us
 anything definitive about patterns over time. Humans are notoriously
 bad at detecting spatial patterns visually, which works out well for
