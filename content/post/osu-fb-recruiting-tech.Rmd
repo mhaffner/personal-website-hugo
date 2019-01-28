@@ -1,6 +1,13 @@
-# The geography of Oklahoma State Football recruiting over time: Web scraping, text processing, mapping, and statistical analysis
+---
+date: "2019-01-28T13:09:13-06:00"
+draft : true
+tags : ["Spatial statistics", "geography", "college football", "recruiting"]
+title : "The Geography of Oklahoma State Football Recruiting: Technical Approach"
+summary : "Web scraping, text processing, mapping, and statistical analysis"
+math : false
+comments : true
 
-## Introduction
+# Introduction
 In this piece I'm going to describe in detail the technical aspects behind a
 recent a recent project that I wrote about [here] on the geography of Oklahoma
 State football's recruiting practices. This project involves extracting web
@@ -8,7 +15,7 @@ content, processing text, geocoding, web mapping, and some basic exploratory
 spatial data analysis. I met a number of unexpected challenges along the way and
 I hope this will serve to help others facing similar issues.
 
-## Extracting and processing text from the web
+# Extracting and processing text from the web
 Initially I was planning on just using the rosters provided on Oklahoma State's
 website, but this proved to be problematic for several reasons: (1) each year's
 roster lists every player on the team, not just recruits; (2) Oklahoma State's
@@ -555,7 +562,7 @@ dev.off()
 knitr::include_graphics("/home/matt/git-repos/okstate-fb-recruiting/img/summary.png")
 ```
 
- From these, it's difficult to see any meaningful trend in the data.
+From these, it's difficult to see any meaningful trend in the data.
 While 14 years as a head coach is a long time in the world of NCAA
 football, from a statistical perspective it's not a large sample size.
 It would be nice to examine trends with more data from the past, but
