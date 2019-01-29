@@ -23,10 +23,10 @@ Initially I was planning on just using the rosters provided on Oklahoma State's
 website, but this proved to be problematic for several reasons: (1) each year's
 roster lists every player on the team and does not stratify by signing class;
 (2) Oklahoma State's online rosters are only available from 2015 - 2019; (3) and
-they use a weird state abbreviation system is used that don't work well with
+they use a weird state abbreviation system that doesn't work well with
 geocoders. Kyle Porter from Pistol's Firing Blog suggested I try Rivals or 247
-Sports, and Rivals had exactly what I was looking for: a list of only recruits
-by year dating back to 2002.
+Sports, and Rivals had exactly what I was looking for: a list of recruits for
+each year dating back to 2002.
 
 In the snippet below I load libraries, set my working directory and extract some
 raw data from my GitLab page. These are state (for the U.S.) and province (for
@@ -71,7 +71,7 @@ for (year in years) {
 ```
 
 What follows is how I turned the web table from rivals into a data frame.
-Typically, using a library like `rvest` is ideal since it can simply much of
+Typically, using a library like `rvest` is ideal since it can simplify much of
 this process using CSS selectors. Unfortunately though, the tables on Rivals are
 generated using JavaScript, not created with pure HTML. This is problematic
 since the page takes some time to load, and the JavaScript content is
@@ -80,11 +80,11 @@ inaccessible with `rvest` in such circumstances.
 There are ways of getting around this that are a bit more involved, but they
 require more work up-front (e.g., R packages `splashr` and `RSelenium`). For
 more long-term projects, these would certainly be more appropriate, but for my
-sake simply extracting all text content from the page and parsing it on the back
-end is sufficient since Rivals' content is predictable and the tables don't vary
-in structure from year to year. I'm not sure why a simple `GET` request with the
-`httr` package works for extracting the JavaScript-created tables but `rvest`
-functions do not:
+sake, simply extracting all text content from the page and parsing it on the
+back end is sufficient since Rivals' content is predictable and the tables don't
+vary in structure from year to year. I'm not sure why a simple `GET` request
+with the `httr` package works for extracting the JavaScript-created tables but
+`rvest` functions do not:
 
 ```{r, echo = TRUE, eval = FALSE}
   ### create data frame
@@ -106,8 +106,8 @@ functions do not:
     map_df(., flatten)
 ```
 
-Here, I make extensive use of the pipe character, `%>%`, which has become my
-best friend lately. While it can be a bit confusing at first, it ultimately
+Here, I make extensive use of the pipe function, `%>%`, which has become a
+staple of mine lately. While it can be a bit confusing at first, it ultimately
 makes for much more transparent workflow and cleaner code. In the code above, a
 period is frequently used as an argument (e.g., `content(., "text") %>%`), which
 simply means "the thing (or object) from the previous pipe." What was puzzling
@@ -119,7 +119,7 @@ place of indexing, which does not work with pipes. Essentially `%>% extract2(1)
 %>% extract(2)` means `my_obj[1][2]`. Then, the use of `strsplit` to get what I
 needed simply required a bit of trial and error.
 
-Next, I geocoded (i.e. attached geometry to the locations based on text), to the
+Next, I geocoded (i.e. attached geometry to locations based on text) the
 players' hometowns so that they could be mapped. I was originally using the
 `nominatim` package for this, but it was inappropriate on a few different
 levels: (1) it is a bit overkill for the simple purpose of getting cities'
@@ -175,11 +175,10 @@ write.csv(agg.df, "osu-recruits.csv", row.names = FALSE)
 ```
 
 # Mapping all recruits
-For this part, some different libraries are needed. In my repository
-this is actually the start of a separate script, but for the sake of
-brevity I omit redundant lines here (e.g., `setwd`). The library
-`randomcoloR` is used to assign colors to points, and `leaflet` is
-used to create the web maps.
+For this part, some different libraries are needed. In my repository this is
+actually the start of a separate script, but for the sake of brevity I omit
+redundant lines here (e.g., `setwd`). The library `randomcoloR` is used to
+assign colors to points, and `leaflet` is used to create the web maps.
 
 ```{r, echo = TRUE, eval = FALSE}
 library(randomcoloR)
@@ -190,27 +189,26 @@ First, I load the data.
 
 ```{r, echo = TRUE, eval = FALSE}
 # load data
-  recruits <- data.frame(read.csv("osu-recruits.csv"))
+recruits <- data.frame(read.csv("osu-recruits.csv"))
 ```
 
-Next, I create a variable containing the years of the study. Rather
-than do this manually with `years <- 2006:2019`, I simply extract the
-unique years from the necessary column in the `recruits` data frame.
+Next, I create a variable containing the years of the study. Rather than do this
+manually with `years <- 2006:2019`, I simply extract the unique years from the
+necessary column in the `recruits` data frame.
 
 ```{r, echo = TRUE, eval = FALSE}
 # get unique years as a variable
 years <- unique(recruits$year)
 ```
 
-Following this, I generate the color scheme used throughout the study.
-Selecting 14 distinct yet visually appealing colors is surprisingly
-difficult, but the `randomcoloR` library does this quite well. As the
-name implies, it generates colors randomly, so I use `set.seed(3)` to
-"fix" the scheme to what I deemed desirable. I tested other schemes
-with `set.seed(1)` and `set.seed(2)`, but didn't like these as much.
-Fixing the color scheme is important since I want to use the same
-color scheme in other scripts. I simply use `set.seed(3)` prior to the
-line with the `distinctColorPalette` function, and this replicates my
+Following this, I generate the color scheme used throughout the study. Selecting
+14 distinct yet visually appealing colors is surprisingly difficult, but the
+`randomcoloR` library does this quite well. As the name implies, it generates
+colors randomly, so I use `set.seed(3)` to "fix" the scheme to what I deemed
+desirable. I tested other schemes with `set.seed(1)` and `set.seed(2)`, but
+didn't like these as much. Fixing the color scheme is important since I want to
+use the same color scheme in other scripts. I simply use `set.seed(3)` prior to
+the line with the `distinctColorPalette` function, and this replicates my
 desired scheme.
 
 ```{r, echo = TRUE, eval = FALSE}
@@ -224,23 +222,21 @@ colors <- colorFactor(sample(distinctColorPalette(length(years))),
                       domain = c(min(years):max(years)))
 ```
 
-To create the web maps I use the `leaflet` package which has great
-documentation and is pleasantly intuitive. It blows my mind how much
-easier it is to create web maps in R rather using pure html and
-JavaScript. Plus, using R makes a wealth of statistical and spatial
-analysis capabilities available directly, and frameworks like Shiny
-and RMarkdown make creating production quality web maps totally
-viable. Since discovering this combination of packages, my mind has
-been reeling with potential applications.
+To create the web maps I use the `leaflet` package which has great documentation
+and is pleasantly intuitive. It blows my mind how much easier it is to create
+web maps in R rather using pure html and JavaScript. Plus, using R makes a
+wealth of statistical and spatial analysis capabilities available directly, and
+frameworks like Shiny and RMarkdown make creating production quality web maps
+totally viable. Since discovering this combination of packages, my mind has been
+reeling with potential applications.
 
-Creating webs is another place where using pipes makes sense, since
-each line adds something new to the map -- sort of like creating a
-layer in a desktop GIS -- and avoids having to repeatedly declare a
-`map` variable. The code below creates a simple base map with the view
-fixed in a location that makes all data points visible. I use Stamen's
-Toner tiles (as opposed to the default Open Street Map tiles) which
-use only black to avoid conflicts with the 14 different colors of the
-points.
+Creating web maps is another place where using pipes makes sense, since each
+line adds something new to the map -- sort of like creating a layer in a desktop
+GIS -- and avoids having to repeatedly declare a `map` variable. The code below
+creates a simple base map with the view fixed in a location that makes all data
+points visible. I use Stamen's Toner tiles (as opposed to the default Open
+Street Map tiles) which use only black to avoid conflicts with the 14 different
+colors of the points.
 
 ```{r, echo = TRUE, eval = FALSE}
 map <- leaflet(width = "100%", height = "650px") %>%
@@ -393,22 +389,20 @@ leaflet(width = "100%", height = "500px") %>%
 ```
 
 ## Dispersion
-Using the median significantly reduces the amount of east-west
-variability and makes 2009 and 2016 stand out from the other years.
-However, this approach does not consider dispersion. If Oklahoma State
-received all of its recruits from Dallas during one year and zero
-recruits from Dallas during another year, the two /could/ still have
-the exact same mean or median center. I compare standard deviation of
-distance from Stillwater by year in a later chart, but I thought it
-would be useful to visualize dispersion by creating lines from
-Stillwater to every recruits' hometown.
+Using the median significantly reduces the amount of east-west variability and
+makes 2009 and 2016 stand out from the other years. However, this approach does
+not consider dispersion. If Oklahoma State received all of its recruits from
+Dallas during one year and zero recruits from Dallas during another year, the
+two *could* still have the exact same mean or median center. I compare standard
+deviation of distance from Stillwater by year in a later chart, but I thought it
+would be useful to visualize dispersion by creating lines from Stillwater to
+every recruits' hometown.
 
-This process also requires some different libraries, particularly for
-creating lines (e.g., the `st_cast` function from `sf`) and converting
-units (`udunits2`). Advantageously, this approach displays both
-distance and direction from Stillwater. It should be noted that the
-`sf` library utilizes geodetic distance by default when a geographic
-coordinate system is used.
+This process also requires some different libraries, particularly for creating
+lines (e.g., the `st_cast` function from `sf`) and converting units
+(`udunits2`). Advantageously, this approach displays both distance and direction
+from Stillwater. It should be noted that the `sf` library utilizes geodetic
+distance by default when a geographic coordinate system is used.
 
 ```{r, echo = TRUE, eval = FALSE}
   library(sp)
@@ -500,9 +494,9 @@ One problem incurred here is that the scale is not consistent from plot to plot.
 This makes it look as though the distance from Stillwater is low in 2014, when
 in reality its standard deviation is low but its median distance from Stillwater
 is *the greatest in the entire set*. Due to this, I think it's useful to
-visualize mean distance, median distance, and standard deviation on a plot as
-well. There were some weird formatting issues with the image, so I saved it as a
-.png instead of rendering it within the .Rmd directly.
+visualize mean distance, median distance, and standard deviation on a line graph
+as well. There were some weird formatting issues with the image, so I saved it
+as a .png instead of rendering it within the .Rmd directly.
 
 ```{r, echo = TRUE, eval = FALSE}
 # create vectors of means, medians, and standard deviation by year
