@@ -8,19 +8,19 @@ comments : true
 ---
 
 # Introduction
-Anyone who reads listens to Gundy's press conferences around signing day or
-reads PFB articles on recruiting knows that Oklahoma State Football's recruiting
-practices are heavily scrutinized. The writers of PFB have pointed out that
-Gundy's attitude toward recruiting has seemingly changed. Where the mantra used
-to be "recruiting is the most important thing we do," it now seems less
-important. With his recent contract extension and seemingly nonchalant attitude
-toward the disappointing results of the 2018 season, some have accused Gundy of
-becoming complacent, particularly in the area of recruiting. Though Oklahoma
-State has historically overperformed based on its recruiting class rankings, the
-ceiling is capped with lackluster recruiting classes. As a geographer, I
-naturally wonder how the locational aspects of Oklahoma State's recruiting
-practices have changed over time, and that's what I'll be discussing in this
-piece.
+Anyone who listens to Gundy's press conferences around signing day or reads PFB
+articles (and the comments section) on recruiting knows that Oklahoma State
+Football's recruiting practices are heavily scrutinized. The writers of PFB have
+pointed out that Gundy's attitude toward recruiting has seemingly changed. Where
+the mantra used to be "recruiting is the most important thing we do," it now
+seems less important. With Gundy's recent contract extension and apparent
+nonchalant attitude toward the disappointing results of the 2018 season, some
+have accused the head coach of becoming complacent, particularly in the area of
+recruiting. Though Oklahoma State has historically over-performed based on its
+recruiting class rankings, the probability of success is lower with less
+talented players. As a geographer, I naturally wonder how the locational aspects
+of Oklahoma State's recruiting practices have changed over time, and that's what
+I'll be discussing in this piece.
 
 Rather than making a prediction beforehand about how changes have occurred,
 (e.g., Gundy has become less effective in recruiting within the region, or, on
@@ -43,18 +43,18 @@ That said, recruiting starts with the head coach, and caveats aside, geography
 clearly matters. Virtually every university signs more recruits from near than
 far, and Oklahoma State faces considerably different recruiting challenges than
 other similarly sized schools in other parts of the country (e.g., Washington
-State, Clemson, or Boise State). Conference alignment matters, as do the
-locations of other schools in the conference, recruits' distance from family and
-friends, the weather, culture, or other personal factors related to location. My
-colleagues who are Nebraska alums bemoan the Huskers' de-emphasis on local
-recruiting that began in the early 2000s -- which some blame for Nebraska's
-downfall -- and it's hard to ignore the coincident struggles that Nebraska,
-Missouri, and Colorado have faced since leaving the Big XII.
+State, Clemson, or Boise State). Conference alignment, proximity to other
+universities, recruits' distance from family and friends, the weather, culture,
+and other personal factors related to location *all* matter. My colleagues who
+are Nebraska alums bemoan the Huskers' de-emphasis on local recruiting that
+began in the early 2000s -- which some blame for Nebraska's downfall -- and it's
+hard to ignore the coincident struggles that Nebraska, Missouri, and Colorado
+have all faced since leaving the Big XII.
 
 The spatialities of recruiting have mostly been beaten like a dead horse in the
 world of sports geography, so I wanted to do something a bit unconventional by
-exploring more than just the locations of where recruits come from. In this
-piece investigate (1) change by year over Gundy's entire tenure, (2) measures of
+investigating more than just the locations of where recruits come from. In this
+piece I explore (1) change by year over Gundy's entire tenure, (2) measures of
 central spatial tendency like the mean and median center, (3) a measure of
 dispersion (i.e. standard deviation of distance from Stillwater), and (4)
 interactive visualizations through web maps. For all analyses and visualization
@@ -66,7 +66,8 @@ or source code, you can read about them
 # All recruits
 First, I map the hometowns (or in the case of transfers, previous
 locations) of all signees recruited during Gundy's tenure, with 2005 excluded
-since the players during this year were not his recruits.
+since the players during this year were not his recruits. **Note: each year is a
+selectable layer, so feel free to explore!**
 
 <div style="text-align: center;">
 ### Recruits' hometowns (2006 - 2019)
@@ -75,12 +76,14 @@ since the players during this year were not his recruits.
 ```
 
 The majority of recruits outside of Oklahoma come from Texas (no surprise),
-particularly Dallas, Houston, and the eastern half of the state in general. One
-one hand this appears to be simply an artifact of proximity to major population
-centers (i.e. Dallas and Houston), yet there appears to be a disproportionate
-number of recruits from Texas (and Kansas) compared to Arkansas or Missouri.
-Outside of Oklahoma's bordering states, several small clusters can be seen near
-Atlanta, southern Louisiana and Mississippi, and southern California.
+particularly Dallas, Houston, and the eastern half of the state. On one hand
+this seems to be simply an artifact of proximity to major population centers
+(i.e. Dallas and Houston), yet there is an apparent disproportionate number of
+recruits from Texas (and Kansas) compared to Arkansas or Missouri. Of course,
+there is not a one-to-one correspondence between population and quality of
+football recruits though. Outside of Oklahoma's bordering states, several small
+clusters can be seen near Atlanta, southern Louisiana and Mississippi, and
+southern California.
 
 # Central tendency and dispersion
 The field of spatial statistics exists in part because humans are notoriously
@@ -118,12 +121,12 @@ these years, the centers appear to remain remarkably stable, including recent
 years (2017 - 2019), with no apparent systematic change over time.
 
 It's hard to ignore that many of the 2009 recruits played for the historic 2011
-team two years later, yet the results two years following 2016 (i.e. 2018) were
-quite disparate. It would be nice to be able tie individual recruiting classes
-to performance in the years following, but I don't think it works way. Unlike
-basketball in which one superb recruiting class can drastically alter a team's
-trajectory, football is different. Success is made out of pattern of high
-caliber recruiting over long period of time.
+team several years later, yet the results two years following 2016 (i.e. 2018)
+were quite different from 2011. Being able to tie individual recruiting classes
+directly to performance in future seasons would be a luxury, but unfortunately I
+don't think it works way. Unlike basketball in which one superb recruiting class
+can drastically alter a team's trajectory, football is different. Success is
+made out of pattern of high caliber recruiting over long periods of time.
 
 # Dispersion
 While informative, these measures do not consider dispersion or within-year
@@ -166,32 +169,32 @@ stable over Gundy's tenure. If Gundy has become complacent, it's not appearing
 in locational distributions of recruits. That said, recruiting efforts could
 certainly be improved, and there is one glaringly relevant takeaway to the
 future of Oklahoma State football: the array of locations from which players
-come is *good enough* in the sense that there are plenty of sufficiently
-talented players in those places. The challenge is recruiting *better* players
-from those locations. As mentioned earlier, this study did not consider
-recruits' high school (or JUCO) ratings.
+come is *good enough* in that there are plenty of sufficiently talented players
+in those places. The challenge is recruiting *better* players from those
+locations. As mentioned earlier, this assessment did not consider recruits' high
+school (or JUCO) ratings.
 
 While it is a bit disappointing to not find something juicier, there are several
 logical ways this small project could be extended. First and foremost, the
 effect of distance on the *quality* of recruits may be revealing. For example,
-are signees from farther away rated lower those close to Stillwater? If so, this
-may give *some* credence to the idea that "it's difficult to get players to come
-to Stillwater" or, more precisely, that "Oklahoma State is less successful is
-getting good players from far away to come to Stillwater." Of course, this
+are signees from farther away rated lower than those close to Stillwater? If so,
+this may give *some* credence to the idea that "it's difficult to get players to
+come to Stillwater" or, more precisely, that "Oklahoma State is less successful
+is getting good players from far away to come to Stillwater." Of course, this
 assumes current conditions with the present efforts and strategies put into
-recruiting. On the flip side, if results were insignificant in that distance
-does not have an effect on the quality of recruits, perhaps Oklahoma State could
-be more aggressive -- and confident -- in offering higher rated recruits from
-farther away. These effects could be assessed with a simple correlation
-analysis.
+recruiting. On the flip side, if results were insignificant (i.e. distance does
+not have an effect on the quality of recruits), perhaps Oklahoma State could be
+more aggressive -- and confident -- in offering scholarships to higher rated
+recruits from farther away. These effects could be assessed with a simple
+correlation analysis.
 
 What could be even more informative, however, is a comparative study with
-another similar university -- either one in the Big XII, similarly positioned
+another university -- either one in the Big XII, similarly positioned
 regionally[^1], or a comparatively sized university in another part of the
 country. With the [recent comparisons of Oklahoma State to
 Clemson](https://pistolsfiringblog.com/reader-thoughts-what-does-an-oklahoma-state-clemson-comp-look-like/),
-a side-by-side comparison of Oklahoma State's geography of recruiting to this
-year's NCAA national champions may make for a fascinating study.
+a side-by-side comparison of these two universities' geographies of recruiting
+may make for a fascinating study.
 
 If you catch something that I didn't see in the data or if you have another idea
 for a follow-up study, feel free to point it out in the comments!

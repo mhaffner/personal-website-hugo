@@ -176,18 +176,33 @@ write.csv(agg.df, "osu-recruits.csv", row.names = FALSE)
 # Mapping all recruits
 For this part, some different libraries are needed. In my repository this is
 actually the start of a separate script, but for the sake of brevity I omit
-redundant lines here (e.g., `setwd`). The library `randomcoloR` is used to
-assign colors to points, and `leaflet` is used to create the web maps.
+redundant lines (e.g., `setwd`). The library `randomcoloR` is used first to
+assign colors to points. Selecting 14 distinct yet visually appealing colors is
+surprisingly difficult, but the `randomcoloR` library does this quite well. As
+the name implies, it generates colors randomly, so I use `set.seed(3)` to "fix"
+the scheme to what I deemed desirable. I tested other schemes with `set.seed(1)`
+and `set.seed(2)`, but didn't like these as much. Fixing the color scheme is
+important since I want to use the same color scheme on every map which is each
+in a different scripts. I simply use `set.seed(3)` prior to the line with the
+`distinctColorPalette` function, and this replicates my desired scheme. This
+only needs to be done once, and I save the result as an R dataset to avoid
+having to `set.seed(3)` in each other script.
 
 ```{r, echo = TRUE, eval = FALSE}
 library(randomcoloR)
-library(leaflet)
+
+set.seed(3)
+color.pal <- sample(distinctColorPalette(length(years)))
+
+# save colors for future use
+saveRDS(color.pal, file="colors.Rda")
 ```
 
-First, I load the data.
+The R library `leaflet` is used to create the web maps. First, I load the data.
 
 ```{r, echo = TRUE, eval = FALSE}
 # load data
+library(leaflet)
 recruits <- data.frame(read.csv("osu-recruits.csv"))
 ```
 
@@ -198,27 +213,6 @@ necessary column in the `recruits` data frame.
 ```{r, echo = TRUE, eval = FALSE}
 # get unique years as a variable
 years <- unique(recruits$year)
-```
-
-Following this, I generate the color scheme used throughout the study. Selecting
-14 distinct yet visually appealing colors is surprisingly difficult, but the
-`randomcoloR` library does this quite well. As the name implies, it generates
-colors randomly, so I use `set.seed(3)` to "fix" the scheme to what I deemed
-desirable. I tested other schemes with `set.seed(1)` and `set.seed(2)`, but
-didn't like these as much. Fixing the color scheme is important since I want to
-use the same color scheme in other scripts. I simply use `set.seed(3)` prior to
-the line with the `distinctColorPalette` function, and this replicates my
-desired scheme.
-
-```{r, echo = TRUE, eval = FALSE}
-# create color palette use the randomcoloR library to generate distinct colors -
-# this works betters than functions like "rainbow"
-#
-# I tried a few different random seeds to get this order - this avoids similarly
-# looking colors adjacent to one another (by year)
-set.seed(3)
-colors <- colorFactor(sample(distinctColorPalette(length(years))),
-                      domain = c(min(years):max(years)))
 ```
 
 To create the web maps I use the `leaflet` package which has great documentation
@@ -237,7 +231,15 @@ points visible. I use Stamen's Toner tiles (as opposed to the default Open
 Street Map tiles) which use only black to avoid conflicts with the 14 different
 colors of the points.
 
+
 ```{r, echo = TRUE, eval = FALSE}
+# load color scheme
+color.pal <- readRDS("colors.Rda")
+
+# create color palette with domain
+colors <- colorFactor((color.pal),
+                      domain = c(min(years):max(years)))
+
 map <- leaflet(width = "100%", height = "650px") %>%
   addProviderTiles(providers$Stamen.Toner) %>%
   setView(lng = -98.33, lat = 38.37, zoom = 4)
@@ -465,9 +467,8 @@ distance by default when a geographic coordinate system is used.
     }
   }
 
-  # set colors
-  set.seed(3)
-  colors <- sample(distinctColorPalette(length(years)))
+  # load color scheme
+  colors <- readRDS("colors.Rda")
 
   # set up plot space
   par(mfrow=c(5,3))
