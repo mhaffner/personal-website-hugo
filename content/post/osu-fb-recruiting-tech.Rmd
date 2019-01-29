@@ -1,6 +1,6 @@
 ---
 date: "2019-01-28T13:09:13-06:00"
-draft : true
+draft : false
 tags : ["Spatial statistics", "geography", "web scraping", "web mapping", "Leaflet", "R"]
 title : "The geography of Oklahoma State football recruiting: Technical approach"
 summary : "Web scraping, text processing, mapping, and exploratory spatial data analysis"
