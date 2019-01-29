@@ -2,7 +2,7 @@
 date: "2019-01-28T13:09:13-06:00"
 draft : true
 tags : ["Spatial statistics", "geography", "college football", "recruiting"]
-title : "The geography of Oklahoma State football recruiting"
+title : "The Geography of Oklahoma State Football Recruiting"
 summary : "A programmatic approach to the spatial dimensions of recruiting over time"
 math : false
 comments : true

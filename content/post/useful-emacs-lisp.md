@@ -53,7 +53,8 @@ get the full file path to the current buffer and strip the extension, (b) slap
 ".html" to the end of this string, \(c) open the file in Firefox, and (d)
 assign this function to a keybinding. Here is what I came up with:
 
-{{<highlight EmacsLisp>}}(defun open-html-firefox ()
+```
+(defun open-html-firefox ()
 
   (interactive)
 
@@ -73,7 +74,7 @@ assign this function to a keybinding. Here is what I came up with:
   (add-hook 'org-mode-hook
             (lambda ()
               (local-set-key (kbd "C-c f") 'open-html-firefox)))
-{{</highlight>}} 
+```
 
 In my dotfile, the function has documentation, but I removed it for this post
 since I'm explaining everything in detail. The function itself is quite short

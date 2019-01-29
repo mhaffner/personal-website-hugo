@@ -1,31 +1,32 @@
 ---
 date: "2019-01-28T13:09:13-06:00"
 draft : true
-tags : ["Spatial statistics", "geography", "college football", "recruiting"]
-title : "The Geography of Oklahoma State Football Recruiting: Technical Approach"
-summary : "Web scraping, text processing, mapping, and statistical analysis"
+tags : ["Spatial statistics", "geography", "web scraping", "web mapping", "Leaflet", "R"]
+title : "The geography of Oklahoma State football recruiting: Technical approach"
+summary : "Web scraping, text processing, mapping, and exploratory spatial data analysis"
 math : false
 comments : true
 ---
 
 # Introduction
 In this piece I'm going to describe in detail the technical aspects behind a
-recent a recent project that I wrote about [here] on the geography of Oklahoma
-State football's recruiting practices. This project involves extracting web
-content, processing text, geocoding, web mapping, and some basic exploratory
-spatial data analysis. I met a number of unexpected challenges along the way and
-I hope this will serve to help others facing similar issues. These scripts are
-also available in full in a [repository on GitLab](https://gitlab.com/mhaffner/okstate-fb-recruiting).
+recent a recent project that I wrote about on the geography of Oklahoma State
+football's recruiting practices. This project involves extracting web content,
+processing text, geocoding, web mapping, and some basic exploratory spatial data
+analysis. I met a number of unexpected challenges along the way and I hope this
+will serve to help others facing similar issues. These scripts are also
+available in full in a [repository on
+GitLab](https://gitlab.com/mhaffner/okstate-fb-recruiting).
 
 # Extracting and processing text from the web
 Initially I was planning on just using the rosters provided on Oklahoma State's
 website, but this proved to be problematic for several reasons: (1) each year's
-roster lists every player on the team, not just recruits; (2) Oklahoma State's
-online rosters are only available from 2015 - 2019; (3) and they use a weird
-state abbreviation system is used that don't work well with geocoders. Kyle
-Porter from Pistol's Firing Blog suggested I try Rivals or 247 Sports, and
-Rivals had exactly what I was looking for: a list of only recruits by year
-dating back to 2002.
+roster lists every player on the team and does not stratify by signing class;
+(2) Oklahoma State's online rosters are only available from 2015 - 2019; (3) and
+they use a weird state abbreviation system is used that don't work well with
+geocoders. Kyle Porter from Pistol's Firing Blog suggested I try Rivals or 247
+Sports, and Rivals had exactly what I was looking for: a list of only recruits
+by year dating back to 2002.
 
 In the snippet below I load libraries, set my working directory and extract some
 raw data from my GitLab page. These are state (for the U.S.) and province (for
@@ -561,7 +562,7 @@ dev.off()
 ### Mean, median, and standard deviation of recruits' distance from Stillwater
 </div>
 ```{r, echo = FALSE, message = FALSE, out.width = "100%"}
-knitr::include_graphics("/home/matt/git-repos/okstate-fb-recruiting/img/summary.png")
+knitr::include_graphics("https://gitlab.com/mhaffner/okstate-fb-recruiting/raw/master/img/summary.png")
 ```
 
 From these, it's difficult to see any meaningful trend in the data.
