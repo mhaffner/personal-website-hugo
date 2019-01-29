@@ -1,5 +1,5 @@
 ---
-date: "2019-01-29T13:09:13-06:00"
+date: "2019-01-29T13:00:00"
 draft : false
 tags : ["Spatial statistics", "geography", "college football", "recruiting"]
 title : "The geography of Oklahoma State football recruiting"
@@ -12,10 +12,10 @@ comments : true
 Anyone who reads listens to Gundy's press conferences around signing day or
 reads PFB articles on recruiting knows that Oklahoma State Football's recruiting
 practices are heavily scrutinized. The writers of PFB have pointed out that
-Gundy's attitude toward recruiting seems to have changed. Where the mantra used
+Gundy's attitude toward recruiting has seemingly changed. Where the mantra used
 to be "recruiting is the most important thing we do," it now seems less
 important. With his recent contract extension and seemingly nonchalant attitude
-toward disappointing results in the 2018 season, some have accused Gundy of
+toward the disappointing results of the 2018 season, some have accused Gundy of
 becoming complacent, particularly in the area of recruiting. Though Oklahoma
 State has historically overperformed based on its recruiting class rankings, the
 ceiling is capped with lackluster recruiting classes. As a geographer, I

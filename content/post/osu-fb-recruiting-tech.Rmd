@@ -1,5 +1,5 @@
 ---
-date: "2019-01-29T13:09:13-06:00"
+date: "2019-01-29T13:00:00"
 draft : false
 tags : ["Spatial statistics", "geography", "web scraping", "web mapping", "Leaflet", "R"]
 title : "The geography of Oklahoma State football recruiting: Technical approach"
