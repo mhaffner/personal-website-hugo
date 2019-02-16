@@ -11,7 +11,7 @@ comments : true
 # Introduction
 In this piece I'm going to describe the technical aspects behind a recent
 project where I wrote about the [geography of Oklahoma State football's
-recruiting practices](https://mhaffner.github.io/post/osu-fb-recruiting/). This project involves extracting web content, processing
+recruiting practices](../../post/osu-fb-recruiting/). This project involves extracting web content, processing
 text, geocoding, web mapping, and some basic exploratory spatial data analysis.
 I met a number of unexpected challenges along the way and I hope this will serve
 to help others facing similar issues. These scripts are also available in full

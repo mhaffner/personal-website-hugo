@@ -62,7 +62,7 @@ interactive visualizations through web maps. For all analyses and visualization
 I use the R Project for Statistical Computing, and I retrieved data on Oklahoma
 State's recruits from Rivals.com. If you're interested in the technical aspects
 or source code, you can read about them
-[here](mhaffner.github.io/posts/osu-fb-recruiting-tech.html).
+[here](../../post/osu-fb-recruiting-tech).
 
 # All recruits
 First, I map the hometowns (or in the case of transfers, previous
