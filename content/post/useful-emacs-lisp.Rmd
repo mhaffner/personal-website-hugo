@@ -9,13 +9,12 @@ comments : true
 ---
 
 I wrote this post to demonstrate how I'm using Emacs Lisp to do some useful
-things. This is post aimed at beginners and those interested (e.g., Vim users
+things. This post is aimed at beginners and those interested (e.g., Vim users
 potentially) in how Emacs can be extended to automate some simple tasks.
 Advanced users will probably have more elegant (or more complete) solutions than
-what I have here,[^1] so with that in mind I will focus more on the
-motivations, thought processes, and progressions I've gone through with these
-functions. I also discuss some future directions and how these functions could
-be improved.
+what I have here,[^1] so with that in mind I will focus more on the motivations,
+thought processes, and progressions I've gone through with these functions. I
+also discuss some future directions and how these functions could be improved.
 
 About a year ago I made a point to complete the built-in Emacs Lisp tutorial.
 For those looking for a good place to start with Emacs Lisp, this is undoubtedly
